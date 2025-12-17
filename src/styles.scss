@@ -1,1 +1,130 @@
-/* You can add global styles to this file, and also import other style files */
+@import "primeicons/primeicons.css";
+
+
+/* Neutral base */
+:root {
+  --bg: #131313;
+  --surface: #202020;
+  --surface-2: #292929;
+  --border: rgba(255, 255, 255, 0.10);
+  --text: rgba(255, 255, 255, 0.92);
+  --muted: rgba(255, 255, 255, 0.68);
+
+  /* Accent / brand */
+  --accent: #e0e0e0; /* primary accent (blue) */
+  --accent-strong: #030101;
+  --accent-hover: #e0e0e0;
+
+  /* Semantic colors */
+  --success: #8d8d8d;
+  --danger: #dc2626;
+  --warning: #f59e0b;
+
+  /* Typography */
+  --font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  --font-size-base: 14px;
+  --line-height-base: 1.4;
+
+  /* Spacing scale */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 40px;
+
+  --radius: 12px;
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.06);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.12);
+  --transition-fast: 160ms ease;
+}
+
+/* Light theme example: set <html data-theme="light"> to enable */
+:root[data-theme="light"] {
+  --bg: #f8fafc;
+  --surface: #ffffff;
+  --surface-2: #f1f5f9;
+  --border: rgba(27, 27, 27, 0.06);
+  --text: rgba(2,6,23,0.92);
+  --muted: rgba(20, 20, 20, 0.6);
+  --accent: #c0c0c0;
+  --accent-hover: #1e40af;
+}
+
+/* Neutral theme (warm/neutral background, not dark blue/green/gray) */
+:root[data-theme="neutral"] {
+  --bg: #f7f5f0;        /* soft warm neutral */
+  --surface: #ffffff;
+  --surface-2: #fbfaf8;
+  --border: rgba(2,6,23,0.06);
+  --text: rgba(2,6,23,0.92);
+  --muted: rgba(2,6,23,0.6);
+  --accent: #2b6cb0;    /* calm blue accent */
+  --accent-hover: #285e95;
+}
+
+html, body { height: 100%; }
+body {
+  margin:0;
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-base);
+  background: var(--bg);
+  color: var(--text);
+}
+
+/* Layout container */
+.main {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 20px 16px 48px;
+}
+
+/* PrimeNG card */
+.p-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Prime buttons */
+.p-button {
+  border-radius: calc(var(--radius) / 1.5);
+  box-shadow: none !important;
+  transition: background var(--transition-fast), border-color var(--transition-fast);
+}
+
+.p-button:focus { box-shadow: none !important; }
+
+/* Make “success/primary” look neutral-accent */
+.p-button.p-button-success,
+.p-button.p-button-primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: white;
+}
+.p-button.p-button-success:hover,
+.p-button.p-button-primary:hover {
+  background: var(--accent-strong);
+  border-color: var(--accent-strong);
+}
+
+/* Text buttons */
+.p-button.p-button-text { color: var(--accent); }
+.p-button.p-button-text:hover { background: rgba(59, 130, 246, 0.08); }
+
+/* Slider */
+.p-slider .p-slider-range { background: var(--accent); }
+.p-slider .p-slider-handle { border-color: var(--accent); }
+
+/* Menubar */
+.p-menubar {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+/* Links (например Dubcast в меню) */
+a { color: var(--accent); }
+a:hover { color: var(--accent-hover); }
+

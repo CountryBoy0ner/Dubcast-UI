@@ -1,0 +1,16 @@
+<p-toast></p-toast>
+
+<p-menubar [model]="items">
+    <ng-template pTemplate="start">
+        <a class="brand" routerLink="/radio">Dubcast</a>
+    </ng-template>
+
+    <ng-template pTemplate="end">
+        <a pButton class="p-button-text" routerLink="/login">Login</a>
+        <a pButton class="p-button-text" routerLink="/register">Register</a>
+    </ng-template>
+</p-menubar>
+
+<div class="page">
+    <router-outlet></router-outlet>
+</div>
