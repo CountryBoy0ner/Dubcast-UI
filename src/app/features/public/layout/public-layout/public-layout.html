@@ -2,29 +2,27 @@
   <div class="header__inner">
     <a routerLink="/radio" class="logo">Dubcast</a>
     <app-mini-player class="header__mini-player"></app-mini-player>
-    <app-online-listeners class="header__online"></app-online-listeners>
-
 
     <nav class="nav">
-      <a routerLink="/radio" class="nav__link">Radio</a>
+      <a routerLink="/radio" class="nav__link" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Radio</a>
 
       <!-- Guest -->
       <ng-container *ngIf="!(isAuth$ | async); else authed">
-        <a routerLink="/login" class="nav__link">Login</a>
-        <a routerLink="/register" class="nav__link">Register</a>
+        <a routerLink="/login" class="nav__link" routerLinkActive="active">Login</a>
+        <a routerLink="/register" class="nav__link" routerLinkActive="active">Register</a>
       </ng-container>
 
       <!-- Authenticated -->
       <ng-template #authed>
-        <span class="nav__user">
-          Logged in as <b>{{ displayName$ | async }}</b>
+        <span class="nav__user" title="Logged in as {{ displayName$ | async }}">
+          {{ displayName$ | async }}
           <small *ngIf="(isAuth$ | async) && !(hasUsername$ | async)" class="no-username"
             title="You don't have a username set. Set it in your Profile.">
             (no username)
           </small>
         </span>
 
-        <a routerLink="/profile" class="nav__link">Profile</a>
+        <a routerLink="/profile" class="nav__link" routerLinkActive="active">Profile</a>
         <button type="button" class="nav__link nav__btn" (click)="logout()">Logout</button>
       </ng-template>
     </nav>
@@ -35,3 +33,8 @@
   <router-outlet></router-outlet>
 </main>
 
+<footer class="footer">
+  <div class="footer__inner">
+    &copy; 2024 Dubcast. All rights reserved.
+  </div>
+</footer>

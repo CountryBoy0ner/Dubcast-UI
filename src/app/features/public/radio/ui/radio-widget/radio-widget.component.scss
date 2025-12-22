@@ -6,7 +6,9 @@
 }
 
 .radio-widget-card-root {
-  background: #1b1b1b;
+  background: rgba(27, 27, 27, 0.65);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border: 1px solid var(--border);
   padding: 5px;
   border-radius: 11px;
@@ -33,8 +35,8 @@
 }
 
 .art {
-  width: 500px; 
-  height: 500px; // чтобы было ровно, квадрат 
+  width: 600px; 
+  height: 600px; // чтобы было ровно, квадрат 
   object-fit: cover;
   border-radius: 8px; // чтобы картинка не "тянулась" из-за stretch
   align-self: center;
@@ -144,7 +146,7 @@
 
 .track {
   font-weight: 400;
-  font-size: 1.125rem;
+  font-size: 2rem;
   line-height: 1.25;
 }
 

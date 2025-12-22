@@ -19,24 +19,7 @@
               <div class="meta">Playlist: {{ now.playlistTitle || 'None' }}</div>
 
 
-              <div class="volume control">
-                <div class="controls"> <button pButton pRipple type="button"
-                    class="p-button-rounded p-button-success p-button-lg p-button-icon-only player-btn"
-                    [icon]="(isPlaying$ | async) ? 'pi pi-pause' : 'pi pi-play'" (click)="toggleRadio()"
-                    [attr.aria-label]="(isPlaying$ | async) ? 'Pause radio' : 'Start radio'"> </button>
-                  <div class="vol">
-                    <i class="pi pi-volume-up vol-ico" aria-hidden="true"></i>
-
-                    <!-- We can use ngModel with an async pipe via a temporary variable or an event, but it's simpler to use (onChange) for the slider -->
-                    <p-slider styleClass="dub-slider" [ngModel]="volume$ | async" [min]="0" [max]="100"
-                      (ngModelChange)="onVolumeChange($event)">
-                    </p-slider>
-
-                    <span class="vol-value">{{ volume$ | async }}</span>
-                  </div>
-
-                </div>
-              </div>
+            
 
             </div>
           </div>

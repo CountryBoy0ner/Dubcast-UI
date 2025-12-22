@@ -46,6 +46,7 @@ export class ProfilePage implements OnInit {
   }
 
   ngOnInit(): void {
+
     this.profile$ = this.store.profile$;
     this.loading$ = this.store.loading$;
     this.saving$ = this.store.saving$;
@@ -53,7 +54,9 @@ export class ProfilePage implements OnInit {
     this.isAuth$ = this.auth.isAuthenticated$;
     this.profile$.subscribe(p => {
       this.currentUsername = (p?.username ?? '').trim();
+      this.currentBio = (p?.bio ?? '').trim();   // ✅ вот этого не хватало
     });
+
 
 
     // грузим профиль
@@ -117,6 +120,10 @@ export class ProfilePage implements OnInit {
     this.form.get('bio')?.markAsTouched();
     if (this.form.get('bio')?.invalid) return;
 
-    this.store.saveBio(bio).subscribe();
+    this.store.saveBio(bio).subscribe(() => {
+      this.currentBio = bio.trim();
+      this.form.get('bio')?.markAsPristine();
+    });
   }
+
 }

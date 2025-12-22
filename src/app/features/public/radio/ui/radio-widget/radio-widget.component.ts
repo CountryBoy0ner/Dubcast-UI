@@ -1,9 +1,11 @@
-import { Component, OnInit } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Observable, BehaviorSubject, Subscription } from 'rxjs';
+import { filter, tap } from 'rxjs/operators';
 
 import { RadioStoreService } from '../../state/radio-store.service';
 import { NowPlayingResponse } from '../../models/now-playing.model';
 import { PlayerService } from '../../../../../core/audio/player.service';
+import { BackgroundService } from '../../../../../core/background/background.service';
 
 @Component({
     selector: 'app-radio-widget',
@@ -11,21 +13,22 @@ import { PlayerService } from '../../../../../core/audio/player.service';
     standalone: false,
     styleUrls: ['./radio-widget.component.scss'],
 })
-export class RadioWidgetComponent implements OnInit {
+export class RadioWidgetComponent implements OnInit, OnDestroy {
     loading$!: Observable<boolean>;
     error$!: Observable<string | null>;
-    now$!: Observable<NowPlayingResponse | null>;
     
-    // Состояние берем из сервиса плеера
+    private nowPlayingData = new BehaviorSubject<NowPlayingResponse | null>(null);
+    now$ = this.nowPlayingData.asObservable();
+    private nowSubscription?: Subscription;
+    
     volume$!: Observable<number>;
     isPlaying$!: Observable<boolean>;
 
-
     constructor(
         public store: RadioStoreService,
-        private playerService: PlayerService
+        private playerService: PlayerService,
+        private backgroundService: BackgroundService
     ) {
-        this.now$ = this.store.now$;
         this.loading$ = this.store.loading$;
         this.error$ = this.store.error$;
         this.volume$ = this.playerService.volume$;
@@ -33,8 +36,19 @@ export class RadioWidgetComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        // Инициализация данных теперь в GlobalPlayer, но можно оставить load для обновления UI
-        // this.store.loadNowPlaying(); 
+        this.nowSubscription = this.store.now$.pipe(
+            tap(nowPlaying => {
+                this.backgroundService.set(nowPlaying?.artworkUrl ?? null);
+            }),
+            filter(nowPlaying => nowPlaying !== null)
+        ).subscribe(nowPlaying => {
+            this.nowPlayingData.next(nowPlaying);
+        });
+    }
+
+    ngOnDestroy(): void {
+        this.nowSubscription?.unsubscribe();
+        // Clear background when component is destroyed
     }
 
     toggleRadio(): void {

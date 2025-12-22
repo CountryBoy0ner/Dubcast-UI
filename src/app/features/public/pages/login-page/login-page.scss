@@ -1,10 +1,9 @@
 :host {
     display: block;
-    
+
 }
 
 .auth-page {
-
     min-height: calc(100vh - 340px); // если шапка+футер другие — подправишь число
     display: flex;
     align-items: center;
@@ -13,10 +12,12 @@
 }
 
 .auth-card {
-    
+
     width: 100%;
     max-width: 420px;
-    background: #1b1b1b;
+    background: rgba(27, 27, 27, 0.65);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     border: 1px solid var(--border);
     border-radius: 8px;
     box-shadow: var(--shadow-sm);
