@@ -1,0 +1,11 @@
+.online {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 14px;
+}
+
+.online__value {
+  font-weight: 600;
+}

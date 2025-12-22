@@ -14,9 +14,10 @@ import { SoundcloudPlayerComponent } from './components/soundcloud-player/soundc
 import { MiniPlayerComponent } from './components/mini-player/mini-player.component';
 import { PopoverModule } from 'primeng/popover';
 
+import { OnlineListenersComponent } from './components/online-listeners/online-listeners.component';
 
 @NgModule({
-  declarations: [SoundcloudPlayerComponent, MiniPlayerComponent],
+  declarations: [SoundcloudPlayerComponent, MiniPlayerComponent, OnlineListenersComponent],
   imports: [
     CommonModule,
     FormsModule,
@@ -49,6 +50,7 @@ import { PopoverModule } from 'primeng/popover';
     // components
     SoundcloudPlayerComponent,
     MiniPlayerComponent,
+    OnlineListenersComponent,
   ],
 })
 export class SharedModule { }
