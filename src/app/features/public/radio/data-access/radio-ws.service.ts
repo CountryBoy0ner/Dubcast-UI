@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Client, IMessage } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
 import { Subject } from 'rxjs';
-import { NowPlayingResponse } from './now-playing.model';
+import { NowPlayingResponse } from '../models/now-playing.model';
 
 @Injectable({ providedIn: 'root' })
 export class RadioWsService {

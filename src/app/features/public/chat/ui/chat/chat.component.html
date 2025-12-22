@@ -1,0 +1,21 @@
+
+
+<div class="chat-root">
+  <div #messagesContainer class="chat-messages" (scroll)="onContainerScroll()" *ngIf="(messages$ | async) as msgs">
+    <div *ngIf="loadingPage" class="loading-older">Loading older messages...</div>
+    <ng-container *ngFor="let m of msgs">
+      <app-chat-message [message]="m"></app-chat-message>
+    </ng-container>
+  </div>
+
+  <div class="chat-input">
+    <input
+  [(ngModel)]="input"
+  (keydown.enter)="send()"
+  [disabled]="!(isAuthenticated$ | async)"
+  [placeholder]="(isAuthenticated$ | async) ? 'Type a message...' : 'Login to write in chat'"
+/>
+    <button (click)="send()">Send</button>
+  </div>
+<div *ngIf="!(isAuthenticated$ | async) && hint" class="chat-hint">{{ hint }}</div>
+</div>

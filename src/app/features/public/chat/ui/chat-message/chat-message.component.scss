@@ -1,0 +1,33 @@
+.user {
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-color: rgba(255, 255, 255, 0.25);
+}
+
+:host ::ng-deep .user-popover {
+  min-width: 260px;
+  padding: 12px;
+  background: #1b1b1b;
+  border: 1px solid rgba(255,255,255,0.12);
+  color: #fff;
+}
+
+:host ::ng-deep .user-popover .pop-title {
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+:host ::ng-deep .user-popover .pop-bio {
+  opacity: 0.85;
+  white-space: pre-wrap;
+}
+
+:host ::ng-deep .user-popover .pop-bio.empty {
+  opacity: 0.6;
+  font-style: italic;
+}
+
+.pop-loading {
+  display: grid;
+  gap: 8px;
+}

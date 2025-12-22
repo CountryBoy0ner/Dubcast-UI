@@ -1,0 +1,12 @@
+/* d:\Diplom\Dubcast\dubcast-ui\src\app\shared\components\global-player\global-player.component.scss */
+:host {
+  /* Не используем display: none, иначе iframe не инициализируется */
+  position: fixed;
+  top: -9999px;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+  z-index: -1;
+}

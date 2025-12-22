@@ -1,0 +1,23 @@
+<div class="chat-message">
+  <span class="time">{{ message.createdAt | date:'HH:mm' }}</span>
+
+  <span class="user"
+        (mouseenter)="onUserEnter($event)"
+        (mouseleave)="onUserLeave()">
+    <b>{{ displayName(message) }}</b>
+  </span>:
+
+  <span class="text">{{ message.text }}</span>
+
+  <p-popover #pop styleClass="user-popover">
+    <ng-container *ngIf="profile">
+      <div class="pop-title">{{ profile.username }}</div>
+      <div class="pop-bio" *ngIf="(profile.bio ?? '').trim(); else emptyBio">
+        {{ profile.bio }}
+      </div>
+      <ng-template #emptyBio>
+        <div class="pop-bio empty">Нет bio</div>
+      </ng-template>
+    </ng-container>
+  </p-popover>
+</div>

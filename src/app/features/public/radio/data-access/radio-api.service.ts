@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { map, Observable } from 'rxjs';
-import { NowPlayingResponse } from './now-playing.model';
+import { NowPlayingResponse } from '../models/now-playing.model';
 
 @Injectable({ providedIn: 'root' })
 export class RadioApiService {

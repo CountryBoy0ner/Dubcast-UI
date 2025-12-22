@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
-import { SharedModule } from '../../shared/shared-module';
 import { AdminRoutingModule } from './admin-routing-module';
+import { SharedModule } from '../../shared/shared.module';
 
 import { AdminLayout } from './layout/admin-layout/admin-layout';
 import { AdminDashboardPage } from './pages/admin-dashboard-page/admin-dashboard-page';
@@ -9,4 +9,4 @@ import { AdminDashboardPage } from './pages/admin-dashboard-page/admin-dashboard
   declarations: [AdminLayout, AdminDashboardPage],
   imports: [SharedModule, AdminRoutingModule],
 })
-export class AdminModule {}
+export class AdminModule { }

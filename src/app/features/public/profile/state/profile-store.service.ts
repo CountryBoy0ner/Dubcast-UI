@@ -1,0 +1,66 @@
+import { Injectable } from '@angular/core';
+import { BehaviorSubject, Observable, finalize, switchMap, tap, catchError, of, map } from 'rxjs';
+import { ProfileApiService } from '../data-access/profile-api.service';
+import { UserProfileResponse } from '../models/profile.model';
+
+@Injectable({ providedIn: 'root' })
+export class ProfileStoreService {
+  private profileSubject = new BehaviorSubject<UserProfileResponse | null>(null);
+  private loadingSubject = new BehaviorSubject<boolean>(false);
+  private savingSubject = new BehaviorSubject<boolean>(false);
+  private errorSubject = new BehaviorSubject<string | null>(null);
+
+  profile$ = this.profileSubject.asObservable();
+  loading$ = this.loadingSubject.asObservable();
+  saving$ = this.savingSubject.asObservable();
+  error$ = this.errorSubject.asObservable();
+
+  constructor(private api: ProfileApiService) {}
+
+  load(): Observable<UserProfileResponse | null> {
+    this.loadingSubject.next(true);
+    this.errorSubject.next(null);
+
+    return this.api.me().pipe(
+      tap(p => this.profileSubject.next(p)),
+      catchError(e => {
+        this.errorSubject.next(e?.error?.message || 'Не удалось загрузить профиль');
+        this.profileSubject.next(null);
+        return of(null);
+      }),
+      finalize(() => this.loadingSubject.next(false))
+    );
+  }
+
+  saveUsername(username: string): Observable<void> {
+    this.savingSubject.next(true);
+    this.errorSubject.next(null);
+
+    return this.api.updateUsername(username).pipe(
+      switchMap(() => this.api.me()),
+      tap(p => this.profileSubject.next(p)),
+      map(() => void 0),                     // ✅ ВОТ ЭТО УБИРАЕТ ТВОЮ ОШИБКУ
+      catchError(e => {
+        this.errorSubject.next(e?.error?.message || 'Не удалось обновить username');
+        return of(void 0);
+      }),
+      finalize(() => this.savingSubject.next(false))
+    );
+  }
+
+  saveBio(bio: string): Observable<void> {
+    this.savingSubject.next(true);
+    this.errorSubject.next(null);
+
+    return this.api.updateBio(bio).pipe(
+      switchMap(() => this.api.me()),
+      tap(p => this.profileSubject.next(p)),
+      map(() => void 0),                     // ✅ И ТУТ
+      catchError(e => {
+        this.errorSubject.next(e?.error?.message || 'Не удалось обновить bio');
+        return of(void 0);
+      }),
+      finalize(() => this.savingSubject.next(false))
+    );
+  }
+}

@@ -1,1 +1,80 @@
-<p>profile-page works!</p>
+<div class="auth-page">
+  <div class="auth-card">
+    <h2 class="auth-title">Profile</h2>
+
+    <ng-container *ngIf="(isAuth$ | async); else needLogin">
+      <div class="auth-error" *ngIf="(error$ | async) as err">{{ err }}</div>
+
+      <div class="auth-hint" *ngIf="(loading$ | async)">Loading profile…</div>
+
+      <form class="auth-form" [formGroup]="form" (ngSubmit)="$event.preventDefault()">
+
+        <!-- USERNAME -->
+        <label class="auth-label">Username</label>
+        <input
+          class="auth-input"
+          formControlName="username"
+          placeholder="my_username"
+        />
+
+        <div class="auth-field-error"
+          *ngIf="form.get('username')?.touched && form.get('username')?.invalid">
+          <div *ngIf="form.get('username')?.errors?.['required']">Username is required</div>
+          <div *ngIf="form.get('username')?.errors?.['minlength']">Min length: 3</div>
+          <div *ngIf="form.get('username')?.errors?.['maxlength']">Max length: 50</div>
+          <div *ngIf="form.get('username')?.errors?.['pattern']">Only letters, numbers, "_" and "."</div>
+        </div>
+
+        <div class="auth-hint subtle">
+          Allowed: A–Z, a–z, 0–9, "_" and "." (3..50)
+        </div>
+
+        <button
+          class="auth-btn"
+          type="button"
+          (click)="saveUsername()"
+          [disabled]="(saving$ | async) || form.get('username')?.invalid || !usernameChanged()">
+          {{ (saving$ | async) ? 'Saving…' : 'Save username' }}
+        </button>
+
+        <hr class="divider" />
+
+        <!-- BIO -->
+        <label class="auth-label">Bio</label>
+        <textarea
+          class="auth-textarea"
+          rows="5"
+          formControlName="bio"
+          placeholder="Tell something about yourself… (max 512)"
+        ></textarea>
+
+        <div class="auth-field-error"
+          *ngIf="form.get('bio')?.touched && form.get('bio')?.invalid">
+          <div *ngIf="form.get('bio')?.errors?.['maxlength']">Max length: 512</div>
+        </div>
+
+        <div class="auth-hint subtle">
+          {{ (form.get('bio')?.value?.length || 0) }}/512
+        </div>
+
+        <button
+          class="auth-btn"
+          type="button"
+          (click)="saveBio()"
+          [disabled]="(saving$ | async) || form.get('bio')?.invalid || !bioChanged()">
+          {{ (saving$ | async) ? 'Saving…' : 'Save bio' }}
+        </button>
+
+      </form>
+    </ng-container>
+
+    <ng-template #needLogin>
+      <div class="auth-error">
+        You need to login to edit your profile.
+      </div>
+      <p class="auth-hint">
+        <a routerLink="/login">Go to login</a>
+      </p>
+    </ng-template>
+  </div>
+</div>

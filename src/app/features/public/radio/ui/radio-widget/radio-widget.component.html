@@ -1,0 +1,54 @@
+<p-card class="radio-widget-card-root"> <ng-template pTemplate="title">
+    <div class="title-row">
+      <div class="title-text">
+        <div class="title">Now playing</div>
+      </div> <a pButton class="p-button-text" (click)="store.loadNowPlaying()">Refresh</a>
+    </div>
+  </ng-template> <ng-template pTemplate="content"> <ng-container *ngIf="(loading$ | async); else loaded">
+      <div class="skeleton-row"> <p-skeleton width="96px" height="96px"></p-skeleton>
+        <div class="skeleton-text"> <p-skeleton width="70%" height="18px"></p-skeleton> <p-skeleton width="40%"
+            height="14px"></p-skeleton> </div>
+      </div>
+    </ng-container> <ng-template #loaded> <ng-container *ngIf="(error$ | async) as err; else ok">
+        <div>{{ err }}</div>
+      </ng-container> <ng-template #ok> <ng-container *ngIf="(now$ | async) as now; else nothing">
+          <div class="row" *ngIf="now?.playing; else nothing"> <img *ngIf="now.artworkUrl" class="art"
+              [src]="now.artworkUrl" alt="Artwork" />
+            <div class="info">
+              <div class="track">{{ now.title || 'Unknown track' }}</div>
+              <div class="meta">Playlist: {{ now.playlistTitle || 'none' }}</div>
+
+
+              <div class="volume control">
+                <div class="controls"> <button pButton pRipple type="button"
+                    class="p-button-rounded p-button-success p-button-lg p-button-icon-only player-btn"
+                    [icon]="(isPlaying$ | async) ? 'pi pi-pause' : 'pi pi-play'" (click)="toggleRadio()"
+                    [attr.aria-label]="(isPlaying$ | async) ? 'Pause radio' : 'Start radio'"> </button>
+                  <div class="vol">
+                    <i class="pi pi-volume-up vol-ico" aria-hidden="true"></i>
+
+                    <!-- Используем ngModel с async pipe через временную переменную или событие, 
+                         но проще использовать (onChange) для слайдера -->
+                    <p-slider styleClass="dub-slider" [ngModel]="volume$ | async" [min]="0" [max]="100"
+                      (ngModelChange)="onVolumeChange($event)">
+                    </p-slider>
+
+                    <span class="vol-value">{{ volume$ | async }}</span>
+                  </div>
+
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </ng-container> <ng-template #nothing>
+          <div class="empty">Now playing: nothing right now.</div>
+        </ng-template>
+
+
+        <div class="chat"> <app-chat></app-chat> </div>
+      </ng-template>
+    </ng-template>
+  </ng-template>
+
+</p-card>

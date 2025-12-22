@@ -1,1 +1,32 @@
-<p>login-page works!</p>
+<div class="auth-page">
+  <div class="auth-card">
+    <h2 class="auth-title">Login</h2>
+
+    <form class="auth-form" [formGroup]="form" (ngSubmit)="submit()">
+      <label class="auth-label">Email</label>
+      <input class="auth-input" formControlName="emailOrUsername" placeholder="example@mail.com" />
+      <div class="auth-field-error"
+        *ngIf="form.get('emailOrUsername')?.touched && form.get('emailOrUsername')?.invalid">
+        Email is required
+      </div>
+
+      <label class="auth-label">Password</label>
+      <input class="auth-input" type="password" formControlName="password" placeholder="Minimum 3 characters" />
+      <div class="auth-field-error" *ngIf="form.get('password')?.touched && form.get('password')?.invalid">
+        Password is required (min 3)
+      </div>
+
+      <div class="auth-error" *ngIf="error">
+        {{ error }}
+      </div>
+
+      <button class="auth-btn" type="submit" [disabled]="loading">
+        {{ loading ? 'Входим…' : 'Войти' }}
+      </button>
+
+      <p class="auth-hint">
+        Don't have an account?<a routerLink="/register"> Register</a>
+      </p>
+    </form>
+  </div>
+</div>
