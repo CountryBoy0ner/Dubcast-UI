@@ -1,8 +1,9 @@
-import { Component, Input, ViewChild, OnDestroy } from '@angular/core';
+import { Component, Input, ViewChild, OnDestroy, HostBinding } from '@angular/core';
 import { Subscription, timer } from 'rxjs';
 import { ChatMessageDto } from '../../models/chat.model';
 import { PublicProfileCacheService } from '../../../../../core/user/public-profile-cache.service';
 import { PublicProfileResponse } from '../../../../../core/user/public-profile-api.service';
+import { UserIdentityService } from 'src/app/core/user/user-identity.service';
 
 @Component({
   selector: 'app-chat-message',
@@ -14,12 +15,20 @@ export class ChatMessageComponent implements OnDestroy {
   @Input() message!: ChatMessageDto;
   @ViewChild('pop') pop!: any;
 
+  @HostBinding('class.own')
+  get isOwnMessage(): boolean {
+    return this.userIdentity.username() === this.message.username;
+  }
+
   profile: PublicProfileResponse | null = null;
 
   private hideSub?: Subscription;
   private loadSub?: Subscription;
 
-  constructor(private profiles: PublicProfileCacheService) {}
+  constructor(
+    private profiles: PublicProfileCacheService,
+    private userIdentity: UserIdentityService
+  ) {}
 
   ngOnDestroy(): void {
     this.hideSub?.unsubscribe();
@@ -28,7 +37,7 @@ export class ChatMessageComponent implements OnDestroy {
 
   displayName(m: ChatMessageDto): string {
     const u = (m.username ?? '').trim();
-    return u.length ? u : 'anonim';
+    return u.length ? u : 'Anonymous';
   }
 
   onUserEnter(ev: MouseEvent): void {
@@ -42,11 +51,11 @@ export class ChatMessageComponent implements OnDestroy {
     this.loadSub = this.profiles.get(username).subscribe({
       next: (p) => {
         this.profile = p;
-        // ✅ показываем ТОЛЬКО когда данные есть
+        // ✅ show ONLY when data is available
         this.pop.show(ev);
       },
       error: () => {
-        // ❗ если профиля нет — просто ничего не показываем (как ты просил)
+        // ❗ if there is no profile — just don't show anything (as you asked)
         this.profile = null;
       },
     });

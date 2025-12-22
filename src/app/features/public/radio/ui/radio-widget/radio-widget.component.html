@@ -1,7 +1,7 @@
 <p-card class="radio-widget-card-root"> <ng-template pTemplate="title">
     <div class="title-row">
       <div class="title-text">
-        <div class="title">Now playing</div>
+        <div class="title">Now Playing</div>
       </div> <a pButton class="p-button-text" (click)="store.loadNowPlaying()">Refresh</a>
     </div>
   </ng-template> <ng-template pTemplate="content"> <ng-container *ngIf="(loading$ | async); else loaded">
@@ -15,8 +15,8 @@
           <div class="row" *ngIf="now?.playing; else nothing"> <img *ngIf="now.artworkUrl" class="art"
               [src]="now.artworkUrl" alt="Artwork" />
             <div class="info">
-              <div class="track">{{ now.title || 'Unknown track' }}</div>
-              <div class="meta">Playlist: {{ now.playlistTitle || 'none' }}</div>
+              <div class="track">{{ now.title || 'Unknown Track' }}</div>
+              <div class="meta">Playlist: {{ now.playlistTitle || 'None' }}</div>
 
 
               <div class="volume control">
@@ -27,8 +27,7 @@
                   <div class="vol">
                     <i class="pi pi-volume-up vol-ico" aria-hidden="true"></i>
 
-                    <!-- Используем ngModel с async pipe через временную переменную или событие, 
-                         но проще использовать (onChange) для слайдера -->
+                    <!-- We can use ngModel with an async pipe via a temporary variable or an event, but it's simpler to use (onChange) for the slider -->
                     <p-slider styleClass="dub-slider" [ngModel]="volume$ | async" [min]="0" [max]="100"
                       (ngModelChange)="onVolumeChange($event)">
                     </p-slider>
@@ -42,7 +41,7 @@
             </div>
           </div>
         </ng-container> <ng-template #nothing>
-          <div class="empty">Now playing: nothing right now.</div>
+          <div class="empty">Nothing is playing right now.</div>
         </ng-template>
 
 

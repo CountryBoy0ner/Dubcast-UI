@@ -27,7 +27,7 @@ export class RadioStoreService {
         next: (data) => this.nowSubject.next(data),
         error: (e) => {
           console.error('[radio][now] error', e);
-          this.errorSubject.next('Не удалось загрузить текущий трек');//todo 
+          this.errorSubject.next('Failed to load the current track');//todo 
         },
       });
   }

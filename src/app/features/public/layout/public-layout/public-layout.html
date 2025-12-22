@@ -7,20 +7,19 @@
 
     <nav class="nav">
       <a routerLink="/radio" class="nav__link">Radio</a>
-      <a routerLink="/playlists" class="nav__link">Playlists</a>
 
-      <!-- Гость -->
+      <!-- Guest -->
       <ng-container *ngIf="!(isAuth$ | async); else authed">
         <a routerLink="/login" class="nav__link">Login</a>
         <a routerLink="/register" class="nav__link">Register</a>
       </ng-container>
 
-      <!-- Залогинен -->
+      <!-- Authenticated -->
       <ng-template #authed>
         <span class="nav__user">
           Logged in as <b>{{ displayName$ | async }}</b>
           <small *ngIf="(isAuth$ | async) && !(hasUsername$ | async)" class="no-username"
-            title="У вас не задан username. Задайте его в Profile.">
+            title="You don't have a username set. Set it in your Profile.">
             (no username)
           </small>
         </span>

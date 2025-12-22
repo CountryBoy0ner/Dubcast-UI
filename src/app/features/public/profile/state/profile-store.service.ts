@@ -24,7 +24,7 @@ export class ProfileStoreService {
     return this.api.me().pipe(
       tap(p => this.profileSubject.next(p)),
       catchError(e => {
-        this.errorSubject.next(e?.error?.message || 'Не удалось загрузить профиль');
+        this.errorSubject.next(e?.error?.message || 'Failed to load profile');
         this.profileSubject.next(null);
         return of(null);
       }),
@@ -41,7 +41,7 @@ export class ProfileStoreService {
       tap(p => this.profileSubject.next(p)),
       map(() => void 0),                     // ✅ ВОТ ЭТО УБИРАЕТ ТВОЮ ОШИБКУ
       catchError(e => {
-        this.errorSubject.next(e?.error?.message || 'Не удалось обновить username');
+        this.errorSubject.next(e?.error?.message || 'Failed to update username');
         return of(void 0);
       }),
       finalize(() => this.savingSubject.next(false))
@@ -57,7 +57,7 @@ export class ProfileStoreService {
       tap(p => this.profileSubject.next(p)),
       map(() => void 0),                     // ✅ И ТУТ
       catchError(e => {
-        this.errorSubject.next(e?.error?.message || 'Не удалось обновить bio');
+        this.errorSubject.next(e?.error?.message || 'Failed to update bio');
         return of(void 0);
       }),
       finalize(() => this.savingSubject.next(false))

@@ -51,14 +51,14 @@ export class AuthService {
         }).pipe(
             tap(res => {
                 if (!res?.accessToken) {
-                    throw new Error('Не удалось получить токен доступа');
+                    throw new Error('Failed to get access token');
                 }
                 this.setToken(res.accessToken);
             }),
             switchMap(() => this.validateToken()),
             map(isValid => {
                 if (!isValid) {
-                    throw new Error('Не удалось подтвердить сессию');
+                    throw new Error('Failed to confirm session');
                 }
             }),
             catchError(err => {
@@ -75,7 +75,7 @@ export class AuthService {
         }).pipe(
             tap(res => {
                 if (!res?.accessToken) {
-                    throw new Error('Не удалось получить токен доступа');
+                    throw new Error('Failed to get access token');
                 }
                 this.setToken(res.accessToken);
             }),

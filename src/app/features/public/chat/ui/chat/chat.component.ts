@@ -62,7 +62,7 @@ export class ChatComponent implements OnInit {
     if (!txt) return;
 
     if (!this.auth.isAuthenticatedNow()) {
-      this.hint = 'Чтобы написать в чат, войдите в аккаунт.';
+      this.hint = 'To write in the chat, please log in.';
       setTimeout(() => (this.hint = ''), 3000);
       return;
     }
@@ -130,6 +130,6 @@ export class ChatComponent implements OnInit {
 
   displayName(m: ChatMessageDto): string {
     const u = (m.username || m.username || '').trim();
-    return u.length ? u : 'Аноним';
+    return u.length ? u : 'Anonymous';
   }
 }

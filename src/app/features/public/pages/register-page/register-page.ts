@@ -36,7 +36,7 @@ export class RegisterPage {
 
     const val = this.form.getRawValue();
     if (val.password !== val.confirmPassword) {
-      this.error = 'Пароли не совпадают';
+      this.error = 'Passwords do not match';
       return;
     }
 
@@ -49,9 +49,9 @@ export class RegisterPage {
       error: (e: any) => {
         this.loading = false;
         if (e.status === 0) {
-          this.error = 'Сервер недоступен. Проверьте соединение.';
+          this.error = 'Server is unavailable. Check your connection.';
         } else {
-          this.error = e?.error?.message || 'Не удалось зарегистрироваться';
+          this.error = e?.error?.message || 'Failed to register';
         }
         this.cdr.detectChanges();
       },
