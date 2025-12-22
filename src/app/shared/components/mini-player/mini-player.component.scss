@@ -1,36 +1,76 @@
+:host {
+  display: block;
+}
+.buttonХ {
+  background: var(--accent);
+  border-color: var(--accent);
+}
 .mini-player {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: var(--space-md);
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius);
 }
 
 .mini-btn {
-  width: 34px;
-  height: 34px;
+  width: 38px;
+  height: 38px;
 }
 
 .vol-ico {
-  opacity: 0.8;
+  color: var(--muted);
 }
 
 .mini-slider {
-  width: 160px;
+  width: 120px;
 }
 
 .vol-value {
-  min-width: 28px;
+  min-width: 3ch;
   text-align: right;
-  opacity: 0.9;
+  color: var(--muted);
+  font-size: 0.9rem;
 }
 
 
-.header__inner {
-  display: flex;
-  align-items: center;
-  gap: 16px;
+
+:host ::ng-deep {
+  /* серый трек */
+  .p-slider.mini-slider {
+    background: rgba(255, 255, 255, 0.25);
+  }
+
+  /* заполненная часть */
+  .p-slider.mini-slider .p-slider-range {
+    background: var(--accent);
+  }
+
+  /* кружок */
+  .p-slider.mini-slider .p-slider-handle {
+    background: var(--accent);      /* было var(--bg) */
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px rgba(0,0,0,0.35); /* чтобы видно на любом фоне */
+  }
+
+  .p-slider.mini-slider:not(.p-disabled) .p-slider-handle:hover {
+    background: var(--accent-hover);
+    border-color: var(--accent-hover);
+  }
 }
 
-.header__mini-player {
-  margin-left: 12px;
-}
 
+
+
+
+  :host ::ng-deep {
+  .mini-btn.p-button {
+    background: var(--accent);      /* основной цвет */
+    border-color: var(--accent);
+    color: #161616;              /* цвет иконки/текста */
+  }
+
+
+  
+  
+}

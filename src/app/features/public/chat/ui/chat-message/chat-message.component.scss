@@ -1,33 +1,93 @@
-.user {
-  cursor: pointer;
-  text-decoration: underline;
-  text-decoration-color: rgba(255, 255, 255, 0.25);
+:host {
+  display: block;
 }
 
+/* bubble */
+.chat-message {
+  position: relative;
+  display: block;
+  width: fit-content;
+  max-width: min(720px, 88%);
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  line-height: 1.35;
+  word-break: break-word;
+  white-space: pre-wrap;
+  margin: 6px 0;
+}
+
+/* свои сообщения вправо */
+.chat-message.own {
+  margin-left: auto;
+  background: rgba(0, 255, 153, 0.14);
+  border-color: rgba(0, 255, 153, 0.22);
+}
+
+/* время */
+.chat-message .time {
+  font-size: 11px;
+  opacity: 0.6;
+  margin-right: 8px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ник */
+.chat-message .user {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 999px;
+  text-decoration: none; /* убираем underline */
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.08);
+  cursor: pointer;
+}
+
+.chat-message.own .user {
+  background: rgba(0,255,153,0.10);
+  border-color: rgba(0,255,153,0.18);
+}
+
+.chat-message .user:hover {
+  background: rgba(255,255,255,0.10);
+  border-color: rgba(255,255,255,0.14);
+}
+
+/* текст */
+.chat-message .text {
+  color: rgba(255, 255, 255, 0.92);
+}
+
+/* если где-то используются старые классы */
+.chat-message .author { font-weight: 700; }
+.chat-message .timestamp { opacity: 0.6; font-size: 11px; }
+.chat-message .content { color: rgba(255,255,255,0.92); }
+
+/* popover (PrimeNG) */
 :host ::ng-deep .user-popover {
   min-width: 260px;
   padding: 12px;
-  background: #1b1b1b;
+  background: #121212;
   border: 1px solid rgba(255,255,255,0.12);
   color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 12px 30px rgba(0,0,0,0.5);
 }
 
 :host ::ng-deep .user-popover .pop-title {
-  font-weight: 700;
+  font-weight: 800;
   margin-bottom: 6px;
 }
 
 :host ::ng-deep .user-popover .pop-bio {
-  opacity: 0.85;
+  opacity: 0.9;
   white-space: pre-wrap;
 }
 
 :host ::ng-deep .user-popover .pop-bio.empty {
   opacity: 0.6;
-  font-style: italic;
-}
-
-.pop-loading {
-  display: grid;
-  gap: 8px;
 }
