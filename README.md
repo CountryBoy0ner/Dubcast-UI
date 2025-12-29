@@ -223,7 +223,7 @@ npm test
 
 E2E тесты лежат в: `src/e2e/e2e/*.e2e.spec.ts`.
 
-Пример: `src/e2e/e2e/smoke.e2e.spec.ts` содержит smoke тесты:
+Пример: `src/e2e/e2e/smoke.e2e.ts` содержит smoke тесты:
 - открытие страницы радио
 - открытие страницы логина
 
