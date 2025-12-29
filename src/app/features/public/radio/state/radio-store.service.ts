@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, finalize } from 'rxjs';
-import { RadioApiService } from './radio-api.service';
-import { NowPlayingResponse } from './now-playing.model';
-import { RadioWsService } from './radio-ws.service';
+import { RadioApiService } from '../data-access/radio-api.service';
+import { NowPlayingResponse } from '../models/now-playing.model';
+import { RadioWsService } from '../data-access/radio-ws.service';
 
 @Injectable({ providedIn: 'root' })
 export class RadioStoreService {
@@ -27,7 +27,7 @@ export class RadioStoreService {
         next: (data) => this.nowSubject.next(data),
         error: (e) => {
           console.error('[radio][now] error', e);
-          this.errorSubject.next('Не удалось загрузить текущий трек');//todo 
+          this.errorSubject.next('Failed to load the current track');//todo 
         },
       });
   }

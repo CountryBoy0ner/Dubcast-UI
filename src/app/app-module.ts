@@ -5,15 +5,18 @@ import { HttpClientModule } from '@angular/common/http';
 
 import { AppRoutingModule } from './app-routing-module';
 import { App } from './app';
+import { CoreModule } from './core/core.module';
+import { SharedModule } from './shared/shared.module';
 
 import { providePrimeNG } from 'primeng/config';
 import Aura from '@primeuix/themes/aura';
 
-import { CoreModule } from './core/core-module';
-import { SharedModule } from './shared/shared-module';
 
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { AuthInterceptor } from './core/auth/auth.interceptor';
+import { GlobalPlayerComponent } from './shared/components/global-player/global-player.component';
 @NgModule({
-  declarations: [App],
+  declarations: [App, GlobalPlayerComponent],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
@@ -26,7 +29,8 @@ import { SharedModule } from './shared/shared-module';
   ],
   providers: [
     provideBrowserGlobalErrorListeners(),
-    providePrimeNG({ theme: { preset: Aura} })
+    providePrimeNG({ theme: { preset: Aura} }),
+    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }
   ],
   bootstrap: [App]
 })

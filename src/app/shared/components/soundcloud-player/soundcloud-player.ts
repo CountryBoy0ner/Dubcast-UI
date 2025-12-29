@@ -17,6 +17,7 @@ declare const SC: any;
 @Component({
   selector: 'app-soundcloud-player',
   templateUrl: './soundcloud-player.html',
+  standalone: false,
   styleUrls: ['./soundcloud-player.scss'],
 })
 export class SoundcloudPlayerComponent implements AfterViewInit, OnChanges, OnDestroy {
@@ -47,18 +48,9 @@ export class SoundcloudPlayerComponent implements AfterViewInit, OnChanges, OnDe
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['volume']) {
-      this.applyVolume();
-    }
-    // if component becomes visible and there is a pending load, init widget
-    if (changes['visible'] && changes['visible'].currentValue && this.pendingLoad && !this.widget) {
-      const p = this.pendingLoad;
-      const playerUrl = 'https://w.soundcloud.com/player/?visual=true&url=' + encodeURIComponent(p.url) + '&auto_play=' + (p.autoPlay ? 'true' : 'false');
-      this.safeSrc = this.sanitizer.bypassSecurityTrustResourceUrl(playerUrl);
-      // let the iframe update then create widget
-      setTimeout(() => this.createWidget(), 0);
-    }
-  }
+  if (changes['volume']) this.applyVolume();
+}
+
 
   ngOnDestroy(): void {
     // у SC.Widget нет нормального destroy, просто отпускаем ссылку
@@ -98,9 +90,7 @@ export class SoundcloudPlayerComponent implements AfterViewInit, OnChanges, OnDe
     });
   }
 
-  pause(): void {
-    this.widget?.pause?.();
-  }
+ 
 
   private createWidget(): void {
     const iframe = this.iframeRef.nativeElement;
@@ -128,4 +118,19 @@ export class SoundcloudPlayerComponent implements AfterViewInit, OnChanges, OnDe
     const v = Math.max(0, Math.min(100, Number(this.volume) || 0));
     this.widget.setVolume(v);
   }
+    public play(): void {
+    if (this.widget) {
+      this.widget.play();
+    }
+  }
+
+  public pause(): void {
+    if (this.widget) {
+      this.widget.pause();
+    }
+  }
+
+
 }
+
+

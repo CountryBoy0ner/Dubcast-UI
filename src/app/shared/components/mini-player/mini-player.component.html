@@ -1,0 +1,23 @@
+<div class="mini-player">
+  <button
+    pButton
+    pRipple
+    type="button"
+    class="p-button-rounded p-button-success p-button-icon-only mini-btn"
+    [icon]="(isPlaying$ | async) ? 'pi pi-pause' : 'pi pi-play'"
+    (click)="toggle()"
+    [attr.aria-label]="(isPlaying$ | async) ? 'Pause' : 'Play'">
+  </button>
+
+  <i class="pi pi-volume-up vol-ico" aria-hidden="true"></i>
+
+  <p-slider
+    class="mini-slider"
+    [ngModel]="volume$ | async"
+    [min]="0"
+    [max]="100"
+    (ngModelChange)="setVolume($event)">
+  </p-slider>
+
+  <span class="vol-value">{{ volume$ | async }}</span>
+</div>

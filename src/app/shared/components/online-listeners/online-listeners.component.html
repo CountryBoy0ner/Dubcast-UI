@@ -1,0 +1,6 @@
+<div class="online">
+  <i class="pi pi-users" aria-hidden="true"></i>
+  <span class="online__value">
+    {{ (stats$ | async)?.totalOnline ?? '—' }}
+  </span>
+</div>
