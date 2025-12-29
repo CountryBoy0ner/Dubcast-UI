@@ -4,7 +4,17 @@
     <app-mini-player class="header__mini-player"></app-mini-player>
 
     <nav class="nav">
-      <a routerLink="/radio" class="nav__link" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Radio</a>
+
+      <div class="live-stats" *ngIf="onlineCount$ | async as count" title="Сейчас онлайн">
+        <div class="live-indicator">
+          <span class="pulsing-dot"></span>
+        </div>
+        <i class="pi pi-users"></i>
+        <span class="count">{{ count }}</span>
+      </div>
+
+      <a routerLink="/radio" class="nav__link" routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }">Radio</a>
 
       <!-- Guest -->
       <ng-container *ngIf="!(isAuth$ | async); else authed">
@@ -25,6 +35,7 @@
         <a routerLink="/profile" class="nav__link" routerLinkActive="active">Profile</a>
         <button type="button" class="nav__link nav__btn" (click)="logout()">Logout</button>
       </ng-template>
+     
     </nav>
   </div>
 </header>

@@ -56,4 +56,14 @@ export class ChatMessageComponent implements OnDestroy {
     this.hideSub?.unsubscribe();
     this.hideSub = timer(150).subscribe(() => this.pop?.hide());
   }
+
+  stringToColor(str: string): string {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+      hash = str.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    // Пастельные/светлые цвета для темной темы (HSL)
+    const h = Math.abs(hash) % 360;
+    return `hsl(${h}, 70%, 70%)`;
+  }
 }

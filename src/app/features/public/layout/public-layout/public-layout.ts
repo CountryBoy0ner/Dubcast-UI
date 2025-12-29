@@ -4,6 +4,7 @@ import { combineLatest, map, Observable } from 'rxjs';
 
 import { AuthService } from '../../../../core/auth/auth.service';
 import { UserIdentityService } from '../../../../core/user/user-identity.service';
+import { AnalyticsWsService } from '../../../../core/analytics/data-access/analytics-ws.service';
 
 @Component({
   selector: 'app-public-layout',
@@ -16,10 +17,13 @@ export class PublicLayout {
   displayName$!: Observable<string>;
   hasUsername$!: Observable<boolean>;
 
+  onlineCount$!: Observable<number>;
+
   constructor(
     private auth: AuthService,
     private identity: UserIdentityService,
-    private router: Router
+    private router: Router,
+    private analyticsWs: AnalyticsWsService
   ) {
     this.isAuth$ = this.auth.isAuthenticated$;
 
@@ -32,6 +36,10 @@ export class PublicLayout {
     );
 
     this.hasUsername$ = this.identity.hasUsername$;
+
+    this.onlineCount$ = this.analyticsWs.stats$.pipe(
+      map(s => s?.totalOnline ?? 0)
+    );
   }
 
   logout(): void {

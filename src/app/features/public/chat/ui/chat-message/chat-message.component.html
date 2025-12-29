@@ -1,13 +1,15 @@
 <div class="chat-message">
-  <span class="time">{{ message.createdAt | date:'HH:mm' }}</span>
-
-  <span class="user"
-        (mouseenter)="onUserEnter($event)"
-        (mouseleave)="onUserLeave()">
-    <b>{{ displayName(message) }}</b>
-  </span>:
-
-  <span class="text">{{ message.text }}</span>
+  <div class="msg-header">
+    <span class="user"
+          (mouseenter)="onUserEnter($event)"
+          (mouseleave)="onUserLeave()"
+          [style.color]="stringToColor(message.username || 'Anonymous')">
+      {{ displayName(message) }}
+    </span>
+    <span class="time">{{ message.createdAt | date:'HH:mm' }}</span>
+  </div>
+  
+  <div class="text">{{ message.text }}</div>
 
   <p-popover #pop styleClass="user-popover">
     <ng-container *ngIf="profile">
