@@ -1,273 +1,251 @@
-# Dubcast UI (Front-End)
+# Criterion: Frontend (Listener UI)
 
-SPA-приложение для веб-радио **Dubcast**, реализованное на **Angular + TypeScript**.  
-Функциональность включает: радио-плеер (SoundCloud), чат, профиль пользователя, подсчёт слушателей в реальном времени (WebSocket/STOMP), затемнённый/размытый фон по обложке текущего трека.
+> This document is an **ADR (Architecture Decision Record)** for the Dubcast frontend and also serves as a short **Frontend README** for reviewers.
+
+## Architecture Decision Record
+
+### Status
+
+**Status:** -  
+**Date:** 2026-01-06
+
+### Context
+
+Dubcast is a “live radio” web application where listeners share the same moment: everyone hears the same stream and sees the same **Now Playing** information. The Listener UI must support:
+
+- **Radio playback** (open the app and start listening quickly).
+- **Now Playing**: current track title + cover artwork (and consistent timing across clients).
+- **Real-time community features**:
+    - **Chat** (send/receive messages live).
+    - **Online listeners counter** (how many people are listening right now).
+- **User profile** where a listener can publish a short bio and links to their music / socials.
+- **Admin management is API-only**: tracks/playlists/schedule are managed via Swagger UI / REST endpoints (no dedicated Admin UI).
+
+Constraints and forces:
+
+- Diploma scope → deliver a functional UI fast, keep it maintainable and demonstrable locally.
+- Backend integration requires **REST** for data and **WebSocket** for real-time features.
+- Basic automated tests (unit + e2e smoke) must exist.
+
+### Decision
+
+Implement the Listener UI as an **Angular (TypeScript) SPA** using:
+
+- **Angular 21** for routing, DI, forms, and HTTP clients.
+- **PrimeNG + PrimeIcons** for UI components and icons (fast development, consistent look).
+- **RxJS** for reactive UI state (player status, now playing, auth/profile state).
+- **STOMP + SockJS** for real-time messaging over WebSocket (chat + online counter).
+- **SCSS** for theming and UI effects (dark/glassmorphism + blurred background from cover artwork).
+
+For local development, use an **Angular proxy** to route `/api` and `/radio-ws` to the backend without CORS issues.
+
+### Alternatives Considered
+
+| Alternative | Pros | Cons | Why Not Chosen |
+|-------------|------|------|----------------|
+| React SPA | Huge ecosystem | More manual architecture decisions | Angular provides stronger structure for diploma scope |
+| Vue SPA | Simple learning curve | Less opinionated for large app structure | Angular chosen for strict project structure + tooling |
+| Server-side templates (Thymeleaf) | Simple deployment | Harder to build real-time chat + player UX | SPA fits reactive/live UI better |
+| Polling instead of WebSocket | Easy to implement | Worse UX, more network traffic | Real-time features are core to Dubcast |
+| NgRx store | Predictable global state | Boilerplate overhead | Services + RxJS are sufficient for current scope |
+
+### Consequences
+
+**Positive:**
+- Strong structure (routing + services + components) improves maintainability.
+- Real-time UX for chat and online counter.
+- Reusable components enable consistent UI across pages.
+
+**Negative:**
+- SPA runtime/bundle is heavier than server-rendered templates.
+- WebSocket connection management adds complexity (reconnects/fallback).
+
+**Neutral:**
+- Admin operations remain API-only and are not part of the Listener UI.
 
 ---
 
-## Быстрый старт
+## Implementation Details
 
-### Требования
-- Node.js (LTS)
-- npm
-- Angular CLI (опционально, можно через `npx`)
+### Quick Start
 
-### Установка и запуск
+**Requirements**
+- Node.js (LTS recommended)
+- npm (project uses `npm@10.8.2`)
+- Angular CLI (optional; the project runs via `ng` scripts)
+
+**Install & run**
 ```bash
 npm install
 npm start
 ```
+Default dev server: `http://localhost:4200`
 
-По умолчанию dev-сервер: `http://localhost:4200`.
+### Backend Proxy (recommended)
 
-### Прокси на backend (рекомендуется)
-Если backend работает на `http://localhost:8080`, добавьте прокси (пример): `proxy.conf.json`
+If backend runs on `http://localhost:8089` (Docker Compose mapping), create `proxy.conf.json`:
+
 ```json
 {
   "/api": {
-    "target": "http://localhost:8080",
+    "target": "http://localhost:8089",
     "secure": false,
     "changeOrigin": true
   },
   "/radio-ws": {
-    "target": "http://localhost:8080",
+    "target": "http://localhost:8089",
     "secure": false,
     "changeOrigin": true,
     "ws": true
   }
 }
 ```
-Запуск с прокси:
+
+Run with proxy:
 ```bash
 npm start -- --proxy-config proxy.conf.json
 ```
 
----
+### Project Structure (high level)
 
-## Структура проекта (в общих чертах)
+```
+src/
+├── app/
+│   ├── core/                 # singleton services (auth, api clients, websocket, player state)
+│   ├── shared/               # reusable UI components (mini-player, global-player, online-listeners, chat widgets)
+│   ├── features/
+│   │   └── public/           # pages: radio, login, register, profile, chat
+│   ├── app.*                 # root component/module + routing bootstrap
+│   └── styles/               # global styles (dark theme, blur/glass effects)
+├── e2e/                       # Playwright E2E tests
+└── playwright.config.ts       # Playwright configuration
+```
 
-- `src/app/app.ts`, `app.html`, `app.module.ts` — корневой компонент/модуль
-- `src/app/features/public/*` — публичная часть (radio/login/register/profile/chat)
-- `src/app/shared/*` — переиспользуемые компоненты (mini-player, global-player, online-listeners, soundcloud-player и т.д.)
-- `src/app/core/*` — сервисы: auth, audio/player, analytics, background, user identity/profile и т.д.
-- `src/e2e/e2e/*` — Playwright e2e тесты
-- `src/playwright.config.ts` — конфигурация Playwright
+### Key Implementation Decisions
 
----
-
-# Документация Front-End приложения Dubcast
-
-Ниже приведён текст для пояснительной записки / README (архитектура, подход, API, user flows, стек).  
-*(Раздел дополнен информацией о тестировании и фактической структуре проекта.)*
-
-## 1. Архитектурная схема
-
-Приложение разработано как **Single Page Application (SPA)** с использованием фреймворка **Angular**. Архитектура следует **модульному принципу** для обеспечения масштабируемости и поддерживаемости кода.
-
-### Структура модулей
-- **AppModule**: Корневой модуль приложения, точка входа.
-- **Features Modules**: Модули, группирующие функциональность по бизнес-доменам:
-  - **PublicModule**: Содержит публичную часть приложения (страницы входа, регистрации, профиль, виджет радио, чат).
-  - **SharedModule**: Содержит общие UI-компоненты, директивы и пайпы (например: mini-player, soundcloud-player, online-listeners и т.д.).
-
-### Основные компоненты
-- **Layouts**: Компоненты-обёртки для структуры страниц (например, `PublicLayout`).
-- **Pages (Контейнеры)**:
-  - `LoginPage`: Страница авторизации.
-  - `RegisterPage`: Страница регистрации.
-  - `ProfilePage`: Редактирование профиля (username + bio).
-  - `RadioPage`: Главная страница с радио.
-- **UI Components (Presentational)**:
-  - `RadioWidgetComponent`: UI “now playing”, управление воспроизведением, громкостью, отображение обложки.
-  - `GlobalPlayerComponent`: Глобальный плеер, который живёт поверх роутинга и продолжает играть при переходах по страницам.
-  - `OnlineListenersComponent`: Отображение текущего количества слушателей (реалтайм статистика).
-  - `MiniPlayerComponent`: Мини-плеер в шапке (быстрый доступ к Play/Pause и громкости).
-
-### Маршрутизация (Routes)
-Навигация настроена через `RouterModule`. Основные маршруты:
-- `/radio` — Главная страница приложения (радио)
-- `/login` — Страница входа.
-- `/register` — Страница регистрации.
-- `/profile` — Страница профиля.
-
-### Управление состоянием
-Используется реактивный подход на базе **RxJS**.
-
-- **Глобальное состояние**: Реализовано через Angular Services (Singleton). Состояние (текущий трек, статус воспроизведения, громкость, авторизация, профили пользователей) хранится в `BehaviorSubject` и предоставляется компонентам как `Observable`.
-- **Локальное состояние**: Управляется внутри компонентов (например, состояния форм и валидаторы на login/register/profile).
+| Decision | Rationale |
+|----------|-----------|
+| Angular Router with routes `/radio`, `/login`, `/register`, `/profile` | Simple, explicit navigation for main flows |
+| Player state lives in a singleton service (`BehaviorSubject`) | Playback continues across route changes |
+| JWT attached via interceptor (or centralized auth service) | Consistent auth handling for protected endpoints |
+| Single WebSocket/STOMP service | One place to manage connect/reconnect + topic subscriptions |
+| Cover-art-based UI background (blur/dim) | Reinforces “Now Playing” and improves visual identity |
+| Proxy config for local dev | Avoids CORS and matches reviewer setup |
 
 ---
 
-## 2. Описание архитектурного подхода
+## API Integration (Frontend View)
 
-Выбран **компонентный подход** в сочетании с **сервис-ориентированной архитектурой**.
+> Endpoint names must match the backend implementation. Below is the **expected integration contract** based on current Dubcast UI features.
 
-### Разделение ответственности
-- Компоненты отвечают за отображение данных (View) и обработку пользовательского ввода.
-- Сервисы инкапсулируют бизнес-логику, взаимодействие с API, WebSocket и хранение состояния.
-
-### Изоляция стилей
-Используется стандартный Angular-подход со SCSS. Глобальные переменные (цвета, шрифты) вынесены в `:root` (например, `styles.scss`), что позволяет централизованно управлять темой приложения (Dark Theme).
-
-### Glassmorphism UI
-В дизайне активно используется полупрозрачность и размытие фона (`backdrop-filter: blur(...)`), реализованные через общие классы/переменные и стили страниц авторизации.
-
----
-
-## 3. Документация API
-
-Клиент взаимодействует с сервером посредством REST API и WebSocket (STOMP/SockJS).
-
-### Auth API (примерная схема)
-| Метод | Эндпоинт | Описание |
+### Auth
+| Method | Endpoint | Purpose |
 |---|---|---|
-| POST | `/api/auth/login` | Авторизация пользователя |
-| POST | `/api/auth/register` | Регистрация нового аккаунта |
+| POST | `/api/auth/login` | Login and receive JWT |
+| POST | `/api/auth/register` | Register a new user |
 
-> Тела запросов и ответы зависят от реализации backend (Spring Security + JWT).
-
-### Profile API
-| Метод | Эндпоинт | Описание |
+### Profile
+| Method | Endpoint | Purpose |
 |---|---|---|
-| GET | `/api/profile/me` | Получить профиль текущего пользователя |
-| PUT/PATCH | `/api/profile/username` | Сохранить username |
-| PUT/PATCH | `/api/profile/bio` | Сохранить bio |
-| GET | `/api/profile/public/{username}` | Публичный профиль (username + bio) для всплывающих подсказок в чате |
+| GET | `/api/profile/me` | Get current user profile |
+| PUT/PATCH | `/api/profile/username` | Update username |
+| PUT/PATCH | `/api/profile/bio` | Update bio |
+| GET | `/api/profile/public/{username}` | Public profile snippet for chat popover |
 
-### Radio API
-| Метод | Эндпоинт | Описание |
+### Radio / Now Playing
+| Method | Endpoint | Purpose |
 |---|---|---|
-| GET | `/api/radio/now` | Получить текущий трек (“now playing”) |
-| WS topic | `/topic/now-playing` | Реалтайм обновление “now playing” |
+| GET | `/api/radio/now` | Current track (title/artwork + timing data) |
 
-### Chat API
-| Метод | Эндпоинт | Описание |
+### Chat (REST + WebSocket)
+| Channel | Endpoint | Purpose |
 |---|---|---|
-| GET | `/api/chat/messages/page?page=N&size=S` | Пагинация истории сообщений |
-| WS app | `/app/chat.send` | Отправка сообщения |
-| WS topic | `/topic/chat` | Реалтайм сообщения чата |
+| GET | `/api/chat/messages/page?page=N&size=S` | Load paged message history |
+| WS app | `/app/chat.send` | Send a message |
+| WS topic | `/topic/chat` | Receive chat messages |
 
 ### Analytics / Online listeners
-| Канал | Endpoint | Описание |
+| Channel | Endpoint | Purpose |
 |---|---|---|
-| WS app | `/app/analytics.heartbeat` | Heartbeat “я слушаю/не слушаю” |
-| WS topic | `/topic/analytics/online` | Рассылка текущего количества слушателей |
-| GET | `/api/admin/analytics/online` | Текущая статистика (для админки/диагностики) |
+| WS app | `/app/analytics.heartbeat` | “I am listening” heartbeat |
+| WS topic | `/topic/analytics/online` | Receive current online count |
+| (optional) GET | `/api/admin/analytics/online` | Diagnostics (not required for Listener UI) |
 
 ---
 
-## 4. User flows / Диаграмма навигации
+## User Flows
 
-### Сценарий "Гость" (Регистрация/Вход)
-1. Пользователь открывает приложение.
-2. Переходит на `/login` или `/register`.
-3. Заполняет форму → Валидация → Отправка данных.
-4. Успех → переход на `/radio`.
+### Guest / Authentication
+1. Open the app.
+2. Navigate to `/login` or `/register`.
+3. Submit form (client validation → API call).
+4. On success → redirect to `/radio` and store JWT.
 
-### Сценарий "Слушатель"
-1. Пользователь открывает `/radio`.
-2. `GlobalPlayerComponent` подключается к WebSocket и подгружает `now playing`.
-3. Пользователь нажимает Play → плеер начинает воспроизведение.
-4. Изменение громкости → обновление `PlayerService` и виджетов.
+### Listener (Radio)
+1. Open `/radio`.
+2. UI loads **Now Playing** and renders cover art.
+3. User presses **Play** → stream starts.
+4. Volume changes update the player service state.
+5. “Now playing” updates refresh the UI (poll or WS topic depending on backend).
 
-### Сценарий "Чат + профили"
-1. Пользователь открывает чат на странице радио.
-2. Сообщения приходят через `/topic/chat`.
-3. При наведении на username — фронт запрашивает `/api/profile/public/{username}` и показывает popover (username + bio).
-
----
-
-## 5. Обоснование выбранного стека
-
-### Framework: Angular
-Причина: Angular предоставляет строгую структуру и типизацию (TypeScript) "из коробки", что критически важно для поддержки кода в дипломном проекте. Встроенные механизмы Dependency Injection и модульности упрощают масштабирование.
-
-### UI Library: PrimeNG
-Причина: В проекте используются компоненты PrimeNG (например p-button, p-slider, popover/skeleton). PrimeNG предоставляет набор готовых, доступных (a11y) компонентов, что ускоряет разработку интерфейса и повышает кроссбраузерность.
-
-### State Management: RxJS (Services)
-Причина: Для приложения потокового аудио (радио) реактивное программирование является лучшим выбором. RxJS позволяет удобно работать с потоками событий (клики, изменение громкости, смена трека) и асинхронными данными API.
-
-### CSS Preprocessor: SCSS
-Причина: Использование переменных, вложенности и миксинов позволяет писать чистый и модульный CSS. Это упрощает поддержку темной темы (Dark Mode), которая является основной для приложения.
+### Chat + Public Profile
+1. User opens chat on Radio page.
+2. Messages arrive from `/topic/chat`.
+3. Hover/click on username → UI requests `/api/profile/public/{username}` and shows a popover (bio + links).
 
 ---
 
-# Тестирование
+## Testing
 
-Проект содержит **минимальный набор Unit-тестов** и **smoke e2e-тесты** (Playwright).  
-Это покрывает требования диплома: минимум 3 unit-теста + 1–2 e2e теста.
-
-## Unit-тесты (Angular / Vitest)
-
-Unit-тесты находятся рядом с кодом и имеют расширение `*.spec.ts` (например: `src/app/**/...spec.ts`).
-
-### Запуск
+### Unit Tests
+Run once (no watch):
 ```bash
-ng test --watch=false
-# или
 npm test
+# or
+ng test --watch=false
 ```
 
-### Что покрыто
-Примеры покрытых unit-тестами частей проекта (минимум 3 ключевых):
-- **`PlayerService`**: проверка управления `isPlaying$`, громкостью и логикой toggle.
-- **Страницы с формами**: `LoginPage`, `RegisterPage`, `ProfilePage` — базовые smoke/unit проверки создания компонента и/или поведения формы.
-- **UI/страницы**: `RadioWidgetComponent`, `RadioPage`, `PublicLayout`, `NotFound` и др. (create tests).
+### E2E Smoke Tests (Playwright)
+Configured in `src/playwright.config.ts` and executed via scripts:
 
-> Примечание: в Vitest нет матчеров `toBeTrue()` / `toBeFalse()`, используйте `toBe(true)` / `toBe(false)` или `toBeTruthy()` / `toBeFalsy()`.
-
----
-
-## E2E / Integration тесты (Playwright)
-
-E2E тесты лежат в: `src/e2e/e2e/*.e2e.spec.ts`.
-
-Пример: `src/e2e/e2e/smoke.e2e.ts` содержит smoke тесты:
-- открытие страницы радио
-- открытие страницы логина
-
-### Конфиг Playwright
-Файл конфигурации: `src/playwright.config.ts`
-
-### Запуск e2e
 ```bash
 npm run e2e
-```
-
-### Запуск e2e с UI (удобно смотреть шаги)
-```bash
 npm run e2e:ui
 ```
 
-### Важно про пути к конфигу
-Конфиг находится в `src/`, поэтому запускать нужно с `-c ./src/playwright.config.ts` (это уже настроено в `package.json`).
+Typical smoke coverage:
+- `/radio` page opens
+- `/login` page opens
 
 ---
 
-## Дополнительно (что можно улучшить при необходимости)
-- Добавить e2e тест логина (с моками API или на тестовом backend).
-- Добавить unit-тесты на сервисы API (например, `PublicProfileApiService`) через `HttpClientTestingModule`.
-- Добавить тест на отображение количества слушателей (через мок `AnalyticsWsService`).
+## Requirements Checklist
+
+| # | Requirement | Status | Evidence/Notes |
+|---|-------------|--------|----------------|
+| 1 | Listener SPA with radio + auth + profile + chat | ✅ | Angular pages and routing for core flows |
+| 2 | REST integration for Now Playing and profile data | ✅ | Angular services calling `/api/**` |
+| 3 | Real-time chat and online counter | ✅ | STOMP/SockJS subscriptions + send endpoints |
+| 4 | Reusable UI components | ✅ | Shared player widgets, online indicator, chat components |
+| 5 | Basic automated tests (unit + e2e smoke) | ✅ | `npm test` + Playwright (`npm run e2e`) |
+| 6 | Mobile browser support | ⚠️ | Best-effort responsive layout; not fully validated on real devices |
+| 7 | Admin UI | ❌ | Out of scope by design (Swagger UI on backend is used instead) |
 
 ---
 
-## Команды (сводка)
+## Known Limitations
 
-```bash
-# Unit tests
-npm test
-# или
-ng test --watch=false
-
-# E2E tests
-npm run e2e
-
-# E2E tests with UI
-npm run e2e:ui
-```
+| Limitation | Impact | Potential Solution |
+|------------|--------|-------------------|
+| Mobile UX not fully tested on real devices | Some UI details may require polishing on small screens | Manual device testing + responsive improvements |
+| SoundCloud metadata availability can change | Import/metadata flows may fail if page structure changes | Add fallback parsing or switch to official APIs where available |
+| SockJS fallback noise (iframe route) may appear | Console warnings; functional impact is low | Ensure WS endpoint mapping + proxy configuration |
 
 ---
 
-## Примечания
-- Если во время e2e появляются предупреждения про `"/radio-ws/iframe.html"` — это SockJS fallback (не влияет на прохождение smoke тестов). Чтобы убрать предупреждения, подключайте proxy `/radio-ws` на backend (см. раздел “Прокси на backend”).
+## References
+
+- Angular docs (Router, HttpClient, DI)
+- PrimeNG / PrimeIcons docs
+- STOMPJS + SockJS docs
+- Playwright docs
