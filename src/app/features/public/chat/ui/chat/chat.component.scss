@@ -35,9 +35,10 @@
 .chat-messages::-webkit-scrollbar-thumb {
   background: rgba(255, 255, 255, 0.1);
   border-radius: 10px;
+  transition: background-color var(--transition-fast);
 }
 .chat-messages::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: var(--surface-active);
 }
 
 .loading-older {
@@ -64,7 +65,7 @@
   transition: all 0.2s ease;
 
   &:focus-within {
-    background: rgba(255, 255, 255, 0.08);
+    background: var(--surface-hover);
     border-color: rgba(255, 255, 255, 0.2);
     box-shadow: 0 0 0 2px rgba(190, 190, 190, 0.15);
   }
@@ -89,21 +90,21 @@
   height: 40px;
   border-radius: 50%;
   border: none;
-  background: var(--accent, #22c55e);
+  background: var(--accent);
   color: #121212;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: transform 0.2s;
+  transition: filter var(--transition-fast);
   margin-left: 8px;
 
   &:hover:not(:disabled) {
-    transform: scale(1.05);
+    filter: brightness(0.9);
   }
   
   &:active:not(:disabled) {
-    transform: scale(0.95);
+    filter: brightness(0.8);
   }
 
   &:disabled {

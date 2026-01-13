@@ -53,7 +53,7 @@
 .nav__link:hover,
 .nav__link.router-link-active {
   color: var(--text);
-  background-color: rgba(255, 255, 255, 0.05);
+  background-color: var(--surface-hover);
 }
 
 .nav__btn {
@@ -94,10 +94,10 @@
   color: var(--text);
   font-size: 0.9rem;
   font-weight: 600;
-  transition: background-color 0.2s;
+  transition: background-color var(--transition-fast);
 
   &:hover {
-    background: rgba(255, 255, 255, 0.12);
+    background: var(--surface-hover);
   }
 
   i {

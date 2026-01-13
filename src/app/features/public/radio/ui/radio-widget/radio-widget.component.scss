@@ -45,11 +45,11 @@
 :host ::ng-deep .player-btn.p-button {
   background: var(--accent);
   border-color: var(--accent);
+  transition: filter var(--transition-fast);
 }
 
 :host ::ng-deep .player-btn.p-button:hover {
-  background: var(--accent);
-  border-color: var(--accent);
+  filter: brightness(0.9);
 }
 
 :host ::ng-deep .p-slider .p-slider-range {
@@ -57,15 +57,21 @@
 }
 :host ::ng-deep .p-slider .p-slider-handle {
   border-color: var(--accent);
+  transition: filter var(--transition-fast);
+}
+
+:host ::ng-deep .p-slider:not(.p-disabled) .p-slider-handle:hover {
+  filter: brightness(0.9);
 }
 
 
 :host ::ng-deep .title-row .p-button.p-button-text {
   color: var(--accent);              /* или свой цвет */
+  transition: background-color var(--transition-fast);
 }
 
 :host ::ng-deep .title-row .p-button.p-button-text:hover {
-  background: rgba(34, 197, 94, 0.12);  /* hover-подложка, подстрой */
+  background: var(--surface-hover);
 }
 
 

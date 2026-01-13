@@ -5,15 +5,15 @@
   --bg: #101010;
   --surface: #1c1c1c;
   --surface-rgb: 28, 28, 28;
+  --surface-hover: rgba(255, 255, 255, 0.08);
+  --surface-active: rgba(255, 255, 255, 0.12);
   --text: #f0f0f0;
   --muted: #d2d2d2;
   --border: rgba(255, 255, 255, 0.153);
 
   /* Accent / Brand Palette */
-  --accent: #ffffffe6;
-  --accent-rgb: 0, 123, 255;
-  --accent-strong: #0056b3;
-  --accent-hover: #3395ff;
+  --accent: #efefef;
+  --accent-hover: #c7c7c7;
 
   /* Semantic Colors */
   --success: #28a745;
@@ -62,6 +62,7 @@ a {
 
 a:hover {
   color: var(--accent-hover);
+  text-decoration: underline;
 }
 
 /* Generic Form & Button Styles */
@@ -82,7 +83,7 @@ a:hover {
 .form-control:focus {
   outline: none;
   border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0.25);
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
 }
 
 .btn {
@@ -102,12 +103,11 @@ a:hover {
 }
 
 .btn-primary {
-  color: #fff;
+  color: #101010;
   background-color: var(--accent);
   border-color: var(--accent);
 }
 
 .btn-primary:hover {
-  background-color: var(--accent-strong);
-  border-color: var(--accent-strong);
+  filter: brightness(0.9);
 }

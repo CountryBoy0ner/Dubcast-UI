@@ -51,11 +51,11 @@
     background: var(--accent);      /* было var(--bg) */
     border-color: var(--accent);
     box-shadow: 0 0 0 2px rgba(0,0,0,0.35); /* чтобы видно на любом фоне */
+    transition: filter var(--transition-fast);
   }
 
   .p-slider.mini-slider:not(.p-disabled) .p-slider-handle:hover {
-    background: var(--accent-hover);
-    border-color: var(--accent-hover);
+    filter: brightness(0.9);
   }
 }
 
@@ -68,6 +68,11 @@
     background: var(--accent);      /* основной цвет */
     border-color: var(--accent);
     color: #161616;              /* цвет иконки/текста */
+    transition: filter var(--transition-fast);
+  }
+
+  .mini-btn.p-button:hover {
+    filter: brightness(0.9);
   }
 
 
