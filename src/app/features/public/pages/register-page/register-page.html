@@ -39,7 +39,7 @@
 
       <div class="auth-error" *ngIf="error">{{ error }}</div>
 
-      <button class="auth-btn" type="submit" [disabled]="loading || form.invalid">
+      <button class="auth-btn" type="submit" [disabled]="loading">
         {{ loading ? 'Creating account…' : 'Register' }}
       </button>
 
