@@ -6,8 +6,8 @@
     class="p-button-rounded p-button-success p-button-icon-only mini-btn"
     [icon]="(isPlaying$ | async) ? 'pi pi-pause' : 'pi pi-play'"
     (click)="toggle()"
-    [attr.aria-label]="(isPlaying$ | async) ? 'Pause' : 'Play'">
-  </button>
+    [attr.aria-label]="(isPlaying$ | async) ? 'Pause' : 'Play'"
+  ></button>
 
   <i class="pi pi-volume-up vol-ico" aria-hidden="true"></i>
 
@@ -16,7 +16,8 @@
     [ngModel]="volume$ | async"
     [min]="0"
     [max]="100"
-    (ngModelChange)="setVolume($event)">
+    (ngModelChange)="setVolume($event)"
+  >
   </p-slider>
 
   <span class="vol-value">{{ volume$ | async }}</span>

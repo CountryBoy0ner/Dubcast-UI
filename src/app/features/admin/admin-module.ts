@@ -9,4 +9,4 @@ import { AdminDashboardPage } from './pages/admin-dashboard-page/admin-dashboard
   declarations: [AdminLayout, AdminDashboardPage],
   imports: [SharedModule, AdminRoutingModule],
 })
-export class AdminModule { }
+export class AdminModule {}

@@ -6,6 +6,4 @@ import { Component } from '@angular/core';
   templateUrl: './admin-dashboard-page.html',
   styleUrl: './admin-dashboard-page.scss',
 })
-export class AdminDashboardPage {
-
-}
+export class AdminDashboardPage {}

@@ -14,7 +14,10 @@ export class RadioStoreService {
   error$ = this.errorSubject.asObservable();
   now$ = this.nowSubject.asObservable();
 
-  constructor(private api: RadioApiService, private ws: RadioWsService) { }
+  constructor(
+    private api: RadioApiService,
+    private ws: RadioWsService,
+  ) {}
 
   loadNowPlaying(): void {
     this.loadingSubject.next(true);
@@ -25,9 +28,9 @@ export class RadioStoreService {
       .pipe(finalize(() => this.loadingSubject.next(false)))
       .subscribe({
         next: (data) => this.nowSubject.next(data),
-        error: (e) => {
-          console.error('[radio][now] error', e);
-          this.errorSubject.next('Failed to load the current track');//todo 
+         error: (_e) => {
+           // Prefer a clear message to be displayed to UI when available
+           this.errorSubject.next(_e?.message || 'Failed to load the current track');
         },
       });
   }
@@ -41,5 +44,4 @@ export class RadioStoreService {
 
   // prevent multiple subscriptions when connectLiveNowPlaying called repeatedly
   private _liveConnected = false;
-
 }

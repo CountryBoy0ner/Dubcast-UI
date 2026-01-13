@@ -22,8 +22,8 @@ export class ChatWsService {
           try {
             const payload = JSON.parse(m.body) as ChatMessageDto;
             this.incoming.next(payload);
-          } catch (e) {
-            console.error('[chat-ws] parse error', e);
+          } catch {
+            // Ignore malformed payloads; consider reporting to monitoring.
           }
         });
       },
@@ -34,7 +34,7 @@ export class ChatWsService {
 
   send(text: string): void {
     if (!this.client || !this.client.connected) {
-      console.warn('[chat-ws] not connected, cannot send');
+      // Not connected — caller should handle retry/queueing.
       return;
     }
     const payload = { text };

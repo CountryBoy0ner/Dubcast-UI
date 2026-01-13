@@ -21,7 +21,7 @@ export class PublicProfileCacheService {
       catchError((err) => {
         this.cache.delete(key);
         throw err;
-      })
+      }),
     );
 
     this.cache.set(key, req$);

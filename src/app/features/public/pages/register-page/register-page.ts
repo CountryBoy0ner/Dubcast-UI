@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component } from '@angular/core';
-import { FormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../../../core/auth/auth.service';
 
@@ -12,13 +12,13 @@ import { AuthService } from '../../../../core/auth/auth.service';
 export class RegisterPage {
   loading = false;
   error = '';
-  form: UntypedFormGroup;
+  form: FormGroup;
 
   constructor(
     private fb: FormBuilder,
     private auth: AuthService,
     private router: Router,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
   ) {
     this.form = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
@@ -46,15 +46,15 @@ export class RegisterPage {
         this.loading = false;
         this.router.navigate(['/radio']);
       },
-      error: (e: any) => {
-        this.loading = false;
-        if (e.status === 0) {
-          this.error = 'Server is unavailable. Check your connection.';
-        } else {
-          this.error = e?.error?.message || 'Failed to register';
-        }
-        this.cdr.detectChanges();
-      },
+        error: (_e) => {
+          this.loading = false;
+          if (_e.status === 0) {
+            this.error = 'Server is unavailable. Check your connection.';
+          } else {
+            this.error = _e?.error?.message || 'Failed to register';
+          }
+          this.cdr.detectChanges();
+        },
     });
   }
 }

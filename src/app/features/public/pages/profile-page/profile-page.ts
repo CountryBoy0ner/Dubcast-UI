@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, Validators, UntypedFormGroup } from '@angular/forms';
+import { FormBuilder, Validators, FormGroup } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { AuthService } from '../../../../core/auth/auth.service';
 import { ProfileStoreService } from '../../profile/state/profile-store.service';
@@ -18,18 +18,15 @@ export class ProfilePage implements OnInit {
   error$!: Observable<string | null>;
   isAuth$!: Observable<boolean>;
 
-
-  form: UntypedFormGroup;
+  form: FormGroup;
   private patchedOnce = false;
   private currentUsername = '';
   private currentBio = '';
 
-
-
   constructor(
     private fb: FormBuilder,
     private auth: AuthService,
-    public store: ProfileStoreService
+    public store: ProfileStoreService,
   ) {
     this.form = this.fb.group({
       username: [
@@ -46,23 +43,20 @@ export class ProfilePage implements OnInit {
   }
 
   ngOnInit(): void {
-
     this.profile$ = this.store.profile$;
     this.loading$ = this.store.loading$;
     this.saving$ = this.store.saving$;
     this.error$ = this.store.error$;
     this.isAuth$ = this.auth.isAuthenticated$;
-    this.profile$.subscribe(p => {
+    this.profile$.subscribe((p) => {
       this.currentUsername = (p?.username ?? '').trim();
-      this.currentBio = (p?.bio ?? '').trim();   // ✅ вот этого не хватало
+      this.currentBio = (p?.bio ?? '').trim(); // ✅ вот этого не хватало
     });
-
-
 
     // грузим профиль
     this.store.load().subscribe({
       next: (p) => this.patchFormIfNeeded(p),
-      error: () => { },
+      error: () => {},
     });
 
     // если store обновился (после save), обновим форму, но аккуратно
@@ -75,10 +69,13 @@ export class ProfilePage implements OnInit {
     // чтобы не перетирать ввод пользователя — патчим только 1 раз,
     // и дальше только когда форма "чистая"
     if (!this.patchedOnce || !this.form.dirty) {
-      this.form.patchValue({
-        username: p.username ?? '',
-        bio: p.bio ?? '',
-      }, { emitEvent: false });
+      this.form.patchValue(
+        {
+          username: p.username ?? '',
+          bio: p.bio ?? '',
+        },
+        { emitEvent: false },
+      );
 
       this.form.markAsPristine();
       this.patchedOnce = true;
@@ -125,5 +122,4 @@ export class ProfilePage implements OnInit {
       this.form.get('bio')?.markAsPristine();
     });
   }
-
 }

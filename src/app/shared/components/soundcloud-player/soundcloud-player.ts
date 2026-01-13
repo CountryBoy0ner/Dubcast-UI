@@ -12,7 +12,21 @@ import {
 } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 
-declare const SC: any;
+type SCWidgetInstance = {
+  pause?: () => void;
+  load: (url: string, opts: { auto_play?: boolean; visual?: boolean; callback?: () => void }) => void;
+  bind: (event: string, cb: () => void) => void;
+  setVolume?: (v: number) => void;
+  play?: () => void;
+  seekTo?: (ms: number) => void;
+};
+
+declare const SC: {
+  Widget: {
+    (iframe: HTMLIFrameElement): SCWidgetInstance;
+    Events: { READY: string; FINISH: string };
+  };
+};
 
 @Component({
   selector: 'app-soundcloud-player',
@@ -31,7 +45,7 @@ export class SoundcloudPlayerComponent implements AfterViewInit, OnChanges, OnDe
 
   safeSrc: SafeResourceUrl;
 
-  private widget: any | null = null;
+  private widget: SCWidgetInstance | null = null;
   private widgetReady = false;
 
   // держим pending, если load вызвали раньше READY
@@ -48,9 +62,8 @@ export class SoundcloudPlayerComponent implements AfterViewInit, OnChanges, OnDe
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-  if (changes['volume']) this.applyVolume();
-}
-
+    if (changes['volume']) this.applyVolume();
+  }
 
   ngOnDestroy(): void {
     // у SC.Widget нет нормального destroy, просто отпускаем ссылку
@@ -59,7 +72,11 @@ export class SoundcloudPlayerComponent implements AfterViewInit, OnChanges, OnDe
 
   load(url: string, autoPlay = true, positionMs = 0): void {
     // build player iframe URL
-    const playerUrl = 'https://w.soundcloud.com/player/?visual=true&url=' + encodeURIComponent(url) + '&auto_play=' + (autoPlay ? 'true' : 'false');
+    const playerUrl =
+      'https://w.soundcloud.com/player/?visual=true&url=' +
+      encodeURIComponent(url) +
+      '&auto_play=' +
+      (autoPlay ? 'true' : 'false');
 
     // if widget not yet created, set iframe src and create widget lazily
     if (!this.widget) {
@@ -78,19 +95,24 @@ export class SoundcloudPlayerComponent implements AfterViewInit, OnChanges, OnDe
     }
 
     // ensure any previous playback is stopped before loading new track
-    try { this.widget.pause?.(); } catch (e) { /* ignore */ }
+    const w = this.widget;
+    if (!w) return;
 
-    this.widget.load(url, {
+    try {
+      w.pause?.();
+    } catch {
+      /* ignore parse errors from third-party widget */
+    }
+
+    w.load(url, {
       auto_play: autoPlay,
       visual: true,
       callback: () => {
         this.applyVolume();
-        if (positionMs > 0) this.widget.seekTo(positionMs);
+        if (positionMs > 0) w.seekTo?.(positionMs);
       },
     });
   }
-
- 
 
   private createWidget(): void {
     const iframe = this.iframeRef.nativeElement;
@@ -114,23 +136,20 @@ export class SoundcloudPlayerComponent implements AfterViewInit, OnChanges, OnDe
   }
 
   private applyVolume(): void {
-    if (!this.widget || !this.widgetReady) return;
+    const w = this.widget;
+    if (!w || !this.widgetReady) return;
     const v = Math.max(0, Math.min(100, Number(this.volume) || 0));
-    this.widget.setVolume(v);
+    w.setVolume?.(v);
   }
-    public play(): void {
-    if (this.widget) {
-      this.widget.play();
-    }
+  public play(): void {
+    const w = this.widget;
+    if (!w) return;
+    w.play?.();
   }
 
   public pause(): void {
-    if (this.widget) {
-      this.widget.pause();
-    }
+    const w = this.widget;
+    if (!w) return;
+    w.pause?.();
   }
-
-
 }
-
-

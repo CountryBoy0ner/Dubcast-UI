@@ -10,12 +10,11 @@ import { NowPlayingResponse } from '../../../features/public/radio/models/now-pl
 import { AfterViewInit } from '@angular/core';
 import { BackgroundService } from '../../../core/background/background.service';
 
-
 @Component({
   selector: 'app-global-player',
   templateUrl: './global-player.component.html',
   styleUrls: ['./global-player.component.scss'],
-  standalone: false
+  standalone: false,
 })
 export class GlobalPlayerComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('player') player?: SoundcloudPlayerComponent;
@@ -31,9 +30,8 @@ export class GlobalPlayerComponent implements OnInit, AfterViewInit, OnDestroy {
   constructor(
     private store: RadioStoreService,
     private playerService: PlayerService,
-    private bg: BackgroundService
-  ) { }
-
+    private bg: BackgroundService,
+  ) {}
 
   ngOnInit(): void {
     // Подключаемся к сокетам и загружаем данные (теперь это делает глобальный плеер)
@@ -42,14 +40,14 @@ export class GlobalPlayerComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // Слушаем громкость
     this.sub.add(
-      this.playerService.volume$.subscribe(v => {
+      this.playerService.volume$.subscribe((v) => {
         this.volume = v;
-      })
+      }),
     );
 
     // Слушаем команду Play/Pause
     this.sub.add(
-      this.playerService.isPlaying$.subscribe(playing => {
+      this.playerService.isPlaying$.subscribe((playing) => {
         this.isPlaying = playing;
         if (playing) {
           // При включении проверяем, нужно ли загрузить трек или просто продолжить
@@ -57,7 +55,7 @@ export class GlobalPlayerComponent implements OnInit, AfterViewInit, OnDestroy {
         } else {
           if (this.player) this.player.pause();
         }
-      })
+      }),
     );
 
     // Слушаем треки
@@ -71,9 +69,8 @@ export class GlobalPlayerComponent implements OnInit, AfterViewInit, OnDestroy {
         if (this.isPlaying) {
           this.syncPlayerState();
         }
-      })
+      }),
     );
-
   }
 
   ngOnDestroy(): void {
@@ -113,7 +110,7 @@ export class GlobalPlayerComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private computePositionMs(now: NowPlayingResponse): number {
     if (!now.startedAt || !now.durationSeconds) return 0;
-    const started = Date.parse(now.startedAt as any);
+    const started = Date.parse(String(now.startedAt));
     if (Number.isNaN(started)) return 0;
 
     const elapsedSec = Math.max(0, (Date.now() - started) / 1000);

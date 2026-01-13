@@ -11,9 +11,7 @@ export class RadioApiService {
     return this.http
       .get<NowPlayingResponse>('/api/radio/now', { observe: 'response' })
       .pipe(
-        map((resp: HttpResponse<NowPlayingResponse>) =>
-          resp.status === 204 ? null : resp.body
-        )
+        map((resp: HttpResponse<NowPlayingResponse>) => (resp.status === 204 ? null : resp.body)),
       );
   }
 }

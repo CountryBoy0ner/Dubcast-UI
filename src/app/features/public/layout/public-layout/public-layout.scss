@@ -47,7 +47,9 @@
   color: var(--muted);
   padding: 6px 12px;
   border-radius: var(--radius);
-  transition: color var(--transition-fast), background-color var(--transition-fast);
+  transition:
+    color var(--transition-fast),
+    background-color var(--transition-fast);
 }
 
 .nav__link:hover,
@@ -85,12 +87,12 @@
   align-items: center;
   gap: 8px;
   padding: 6px 12px;
-  
+
   // Glassmorphism эффект
   background: rgba(255, 255, 255, 0.08);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 20px;
-  
+
   color: var(--text);
   font-size: 0.9rem;
   font-weight: 600;

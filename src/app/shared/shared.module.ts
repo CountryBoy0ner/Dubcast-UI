@@ -53,4 +53,4 @@ import { OnlineListenersComponent } from './components/online-listeners/online-l
     OnlineListenersComponent,
   ],
 })
-export class SharedModule { }
+export class SharedModule {}

@@ -33,8 +33,6 @@
   font-size: 0.9rem;
 }
 
-
-
 :host ::ng-deep {
   /* серый трек */
   .p-slider.mini-slider {
@@ -48,9 +46,9 @@
 
   /* кружок */
   .p-slider.mini-slider .p-slider-handle {
-    background: var(--accent);      /* было var(--bg) */
+    background: var(--accent); /* было var(--bg) */
     border-color: var(--accent);
-    box-shadow: 0 0 0 2px rgba(0,0,0,0.35); /* чтобы видно на любом фоне */
+    box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.35); /* чтобы видно на любом фоне */
     transition: filter var(--transition-fast);
   }
 
@@ -58,24 +56,11 @@
     filter: brightness(0.9);
   }
 }
-
-
-
-
-
-  :host ::ng-deep {
+:host ::ng-deep {
   .mini-btn.p-button {
-    background: var(--accent);      /* основной цвет */
+    background: var(--accent); /* основной цвет */
     border-color: var(--accent);
-    color: #161616;              /* цвет иконки/текста */
+    color: #161616; /* цвет иконки/текста */
     transition: filter var(--transition-fast);
   }
-
-  .mini-btn.p-button:hover {
-    filter: brightness(0.9);
-  }
-
-
-  
-  
 }

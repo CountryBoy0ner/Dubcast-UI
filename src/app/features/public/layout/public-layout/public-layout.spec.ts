@@ -12,16 +12,16 @@ import { UserIdentityService } from '../../../../core/user/user-identity.service
 @Component({
   selector: 'app-mini-player',
   template: '',
-  standalone: false
+  standalone: false,
 })
-class MiniPlayerStubComponent { }
+class MiniPlayerStubComponent {}
 
 describe('PublicLayout', () => {
   let component: PublicLayout;
   let fixture: ComponentFixture<PublicLayout>;
 
   // простые моки потоков
-  const authState$ = new BehaviorSubject<any>({
+  const authState$ = new BehaviorSubject<Record<string, unknown>>({
     token: null,
     email: null,
     role: null,
@@ -31,7 +31,7 @@ describe('PublicLayout', () => {
   const authMock: Partial<AuthService> = {
     state$: authState$.asObservable(),
     isAuthenticated$: new BehaviorSubject(false).asObservable(),
-    logout: () => { },
+    logout: () => {},
   };
 
   const identityMock: Partial<UserIdentityService> = {

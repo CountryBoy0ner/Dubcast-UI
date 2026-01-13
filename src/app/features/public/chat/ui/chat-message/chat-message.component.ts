@@ -12,7 +12,7 @@ import { PublicProfileResponse } from '../../../../../core/user/public-profile-a
 })
 export class ChatMessageComponent implements OnDestroy {
   @Input() message!: ChatMessageDto;
-  @ViewChild('pop') pop!: any;
+  @ViewChild('pop') pop!: HTMLElement | null;
 
   profile: PublicProfileResponse | null = null;
 
@@ -43,7 +43,8 @@ export class ChatMessageComponent implements OnDestroy {
       next: (p) => {
         this.profile = p;
         // ✅ показываем ТОЛЬКО когда данные есть
-        this.pop.show(ev);
+        const popEl: any = this.pop;
+        if (popEl && typeof popEl.show === 'function') popEl.show(ev);
       },
       error: () => {
         // ❗ если профиля нет — просто ничего не показываем (как ты просил)
@@ -54,7 +55,10 @@ export class ChatMessageComponent implements OnDestroy {
 
   onUserLeave(): void {
     this.hideSub?.unsubscribe();
-    this.hideSub = timer(150).subscribe(() => this.pop?.hide());
+    this.hideSub = timer(150).subscribe(() => {
+      const popEl: any = this.pop;
+      if (popEl && typeof popEl.hide === 'function') popEl.hide();
+    });
   }
 
   stringToColor(str: string): string {

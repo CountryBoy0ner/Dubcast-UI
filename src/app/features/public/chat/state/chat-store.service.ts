@@ -10,7 +10,6 @@ export class ChatStoreService {
   private loadingSubject = new BehaviorSubject<boolean>(false);
   private messagesSub = new BehaviorSubject<ChatMessageDto[]>([]);
 
-
   messages$ = this.messagesSubject.asObservable();
   loading$ = this.loadingSubject.asObservable();
 
@@ -20,7 +19,10 @@ export class ChatStoreService {
 
   private _liveConnected = false;
 
-  constructor(private api: ChatApiService, private ws: ChatWsService) {}
+  constructor(
+    private api: ChatApiService,
+    private ws: ChatWsService,
+  ) {}
 
   // Load a page from server. page=0 is the latest page.
   loadPage(page = 0): Observable<ChatMessageDto[]> {
@@ -50,7 +52,7 @@ export class ChatStoreService {
           }
         }
         this.loadingSubject.next(false);
-      })
+      }),
     );
   }
 
@@ -68,7 +70,7 @@ export class ChatStoreService {
     this.ws.connect();
     this.ws.incoming$.subscribe((m) => {
       const cur = this.messagesSubject.value || [];
-      
+
       this.messagesSubject.next([...cur, m]);
     });
   }
@@ -78,11 +80,12 @@ export class ChatStoreService {
     if (!trimmed) return;
 
     this.api.send(trimmed).subscribe({
-      next: (saved) => {
+      next: (_saved) => {},
+      error: (_e) => {
+        // Log to monitoring system if available; keep UI error handling here instead.
+        // console.error removed to avoid noisy logs in production.
       },
-      error: (e) => {
-        console.error('[chat][send] failed', e);
-      }
     });
   }
 }
+ 

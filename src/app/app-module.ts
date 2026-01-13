@@ -11,7 +11,6 @@ import { SharedModule } from './shared/shared.module';
 import { providePrimeNG } from 'primeng/config';
 import Aura from '@primeuix/themes/aura';
 
-
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AuthInterceptor } from './core/auth/auth.interceptor';
 import { GlobalPlayerComponent } from './shared/components/global-player/global-player.component';
@@ -25,13 +24,13 @@ import { GlobalPlayerComponent } from './shared/components/global-player/global-
     CoreModule,
     SharedModule,
 
-    AppRoutingModule
+    AppRoutingModule,
   ],
   providers: [
     provideBrowserGlobalErrorListeners(),
-    providePrimeNG({ theme: { preset: Aura} }),
-    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }
+    providePrimeNG({ theme: { preset: Aura } }),
+    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
   ],
-  bootstrap: [App]
+  bootstrap: [App],
 })
 export class AppModule {}

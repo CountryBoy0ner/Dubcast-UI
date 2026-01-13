@@ -95,7 +95,9 @@
   color: #111;
   border-radius: 10px;
   cursor: pointer;
-  transition: transform 120ms ease, opacity 120ms ease;
+  transition:
+    transform 120ms ease,
+    opacity 120ms ease;
 }
 
 .auth-btn:disabled {

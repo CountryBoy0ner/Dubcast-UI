@@ -40,14 +40,13 @@
 
   /* зерно (чисто CSS). Очень тонко, но помогает */
   background-image:
-    radial-gradient(circle at 20% 10%, rgba(255,255,255,0.06) 0 1px, transparent 2px),
-    radial-gradient(circle at 80% 30%, rgba(255,255,255,0.05) 0 1px, transparent 2px),
-    radial-gradient(circle at 40% 70%, rgba(255,255,255,0.04) 0 1px, transparent 2px),
-    radial-gradient(circle at 70% 90%, rgba(255,255,255,0.05) 0 1px, transparent 2px);
+    radial-gradient(circle at 20% 10%, rgba(255, 255, 255, 0.06) 0 1px, transparent 2px),
+    radial-gradient(circle at 80% 30%, rgba(255, 255, 255, 0.05) 0 1px, transparent 2px),
+    radial-gradient(circle at 40% 70%, rgba(255, 255, 255, 0.04) 0 1px, transparent 2px),
+    radial-gradient(circle at 70% 90%, rgba(255, 255, 255, 0.05) 0 1px, transparent 2px);
   background-size: 140px 140px;
   opacity: 0.12; /* регулируй 0.06–0.18 */
 }
-
 
 .main-content {
   display: flex;

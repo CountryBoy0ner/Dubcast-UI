@@ -22,13 +22,13 @@ export class ProfileStoreService {
     this.errorSubject.next(null);
 
     return this.api.me().pipe(
-      tap(p => this.profileSubject.next(p)),
-      catchError(e => {
-        this.errorSubject.next(e?.error?.message || 'Failed to load profile');
+      tap((p) => this.profileSubject.next(p)),
+      catchError((_e) => {
+        this.errorSubject.next(_e?.error?.message || 'Failed to load profile');
         this.profileSubject.next(null);
         return of(null);
       }),
-      finalize(() => this.loadingSubject.next(false))
+      finalize(() => this.loadingSubject.next(false)),
     );
   }
 
@@ -38,13 +38,13 @@ export class ProfileStoreService {
 
     return this.api.updateUsername(username).pipe(
       switchMap(() => this.api.me()),
-      tap(p => this.profileSubject.next(p)),
-      map(() => void 0),                     // ✅ ВОТ ЭТО УБИРАЕТ ТВОЮ ОШИБКУ
-      catchError(e => {
-        this.errorSubject.next(e?.error?.message || 'Failed to update username');
+      tap((p) => this.profileSubject.next(p)),
+      map(() => void 0), // ✅ ВОТ ЭТО УБИРАЕТ ТВОЮ ОШИБКУ
+      catchError((_e) => {
+        this.errorSubject.next(_e?.error?.message || 'Failed to update username');
         return of(void 0);
       }),
-      finalize(() => this.savingSubject.next(false))
+      finalize(() => this.savingSubject.next(false)),
     );
   }
 
@@ -54,13 +54,13 @@ export class ProfileStoreService {
 
     return this.api.updateBio(bio).pipe(
       switchMap(() => this.api.me()),
-      tap(p => this.profileSubject.next(p)),
-      map(() => void 0),                     // ✅ И ТУТ
-      catchError(e => {
-        this.errorSubject.next(e?.error?.message || 'Failed to update bio');
+      tap((p) => this.profileSubject.next(p)),
+      map(() => void 0), // ✅ И ТУТ
+      catchError((_e) => {
+        this.errorSubject.next(_e?.error?.message || 'Failed to update bio');
         return of(void 0);
       }),
-      finalize(() => this.savingSubject.next(false))
+      finalize(() => this.savingSubject.next(false)),
     );
   }
 }

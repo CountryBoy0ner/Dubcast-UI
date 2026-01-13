@@ -1,18 +1,18 @@
-import { Component, OnInit, signal, HostBinding } from '@angular/core';
+import { Component, OnInit, signal, HostBinding, OnDestroy } from '@angular/core';
 import { AnalyticsPresenceService } from './core/analytics/state/analytics-presence.service';
 import { BackgroundService } from './core/background/background.service';
-import { Observable, Subscription } from 'rxjs';
+import { Subscription } from 'rxjs';
 import { DomSanitizer, SafeStyle } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.html',
   standalone: false,
-  styleUrl: './app.scss'
+  styleUrl: './app.scss',
 })
-export class App implements OnInit {
+export class App implements OnInit, OnDestroy {
   protected readonly title = signal('dubcast-ui');
-  
+
   @HostBinding('style.--background-image-url')
   protected bgImageUrl: SafeStyle | null = null;
 
@@ -21,9 +21,9 @@ export class App implements OnInit {
   constructor(
     private presence: AnalyticsPresenceService,
     private backgroundService: BackgroundService,
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer,
   ) {
-    this.bgSub = this.backgroundService.backgroundUrl$.subscribe(url => {
+    this.bgSub = this.backgroundService.backgroundUrl$.subscribe((url) => {
       if (url) {
         this.bgImageUrl = this.sanitizer.bypassSecurityTrustStyle(`url(${url})`);
       } else {

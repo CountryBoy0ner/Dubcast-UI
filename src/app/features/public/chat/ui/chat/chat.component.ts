@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, OnDestroy } from '@angular/core';
 import { ChatStoreService } from '../../state/chat-store.service';
 import { Observable, Subscription } from 'rxjs';
 import { ChatMessageDto } from '../../models/chat.model';
@@ -9,7 +9,7 @@ import { AuthService } from '../../../../../core/auth/auth.service';
   styleUrls: ['./chat.component.scss'],
   standalone: false,
 })
-export class ChatComponent implements OnInit {
+export class ChatComponent implements OnInit, OnDestroy {
   messages$!: Observable<ChatMessageDto[]>;
   loading$!: Observable<boolean>;
   input = '';
@@ -25,7 +25,10 @@ export class ChatComponent implements OnInit {
   noMorePages = false;
   pageSize = 20;
 
-  constructor(public store: ChatStoreService, private auth: AuthService) { }
+  constructor(
+    public store: ChatStoreService,
+    private auth: AuthService,
+  ) {}
 
   ngOnInit(): void {
     this.isAuthenticated$ = this.auth.isAuthenticated$;
@@ -33,16 +36,14 @@ export class ChatComponent implements OnInit {
     this.messages$ = this.store.messages$;
     this.loading$ = this.store.loading$;
 
-    this.subs.add(
-      this.auth.isAuthenticated$.subscribe(val => this.isAuthenticated = val)
-    );
+    this.subs.add(this.auth.isAuthenticated$.subscribe((val) => (this.isAuthenticated = val)));
 
     // subscribe to messages to handle autoscroll
     this.subs.add(
       this.store.messages$.subscribe(() => {
         // wait a tick for DOM update
         setTimeout(() => this.handleMessagesUpdated(), 0);
-      })
+      }),
     );
 
     // initial load: page 0
@@ -51,7 +52,7 @@ export class ChatComponent implements OnInit {
         // after initial page loaded, scroll to bottom
         setTimeout(() => this.scrollToBottom(), 0);
       },
-      error: () => { },
+      error: () => {},
     });
 
     this.store.connectLive();
@@ -101,7 +102,7 @@ export class ChatComponent implements OnInit {
     if (!el) return;
     try {
       el.scrollTop = el.scrollHeight;
-    } catch (e) {
+    } catch {
       // ignore
     }
   }

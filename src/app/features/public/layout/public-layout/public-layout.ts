@@ -23,23 +23,19 @@ export class PublicLayout {
     private auth: AuthService,
     private identity: UserIdentityService,
     private router: Router,
-    private analyticsWs: AnalyticsWsService
+    private analyticsWs: AnalyticsWsService,
   ) {
     this.isAuth$ = this.auth.isAuthenticated$;
 
-    const email$ = this.auth.state$.pipe(
-      map(s => (s.email ?? '').trim() || null)
-    );
+    const email$ = this.auth.state$.pipe(map((s) => (s.email ?? '').trim() || null));
 
     this.displayName$ = combineLatest([this.identity.username$, email$]).pipe(
-      map(([u, e]) => u || e || 'anonim')
+      map(([u, e]) => u || e || 'anonim'),
     );
 
     this.hasUsername$ = this.identity.hasUsername$;
 
-    this.onlineCount$ = this.analyticsWs.stats$.pipe(
-      map(s => s?.totalOnline ?? 0)
-    );
+    this.onlineCount$ = this.analyticsWs.stats$.pipe(map((s) => s?.totalOnline ?? 0));
   }
 
   logout(): void {

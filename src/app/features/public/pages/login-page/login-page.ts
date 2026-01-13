@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component } from '@angular/core';
-import { FormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../../../core/auth/auth.service';
 @Component({
@@ -11,28 +11,27 @@ import { AuthService } from '../../../../core/auth/auth.service';
 export class LoginPage {
   loading = false;
   error = '';
-  form: UntypedFormGroup;
+  form: FormGroup;
 
   constructor(
     private fb: FormBuilder,
     private auth: AuthService,
     private router: Router,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
   ) {
+    // Basic login form with validation
     this.form = this.fb.group({
       emailOrUsername: ['', [Validators.required]],
-      password: ['', [Validators.required, Validators.minLength(3)]], //todo
+      password: ['', [Validators.required, Validators.minLength(3)]],
     });
   }
 
   submit(): void {
-    console.log("Login form submitted");
-    
+    // Clear previous error
     this.error = '';
 
     if (this.form.invalid) {
       this.form.markAllAsTouched();
-      console.log('payload', this.form.getRawValue());
       return;
     }
 
@@ -41,19 +40,14 @@ export class LoginPage {
 
     this.auth.login(v.emailOrUsername, v.password).subscribe({
       next: () => {
-        console.log("successful login");
-
         this.loading = false;
         this.router.navigate(['/radio']);
       },
-      error: (e: any) => {
-        this.loading = false;
-        // e.error.message — если пришла ошибка от бэка (HttpErrorResponse)
-        // e.message — если это обычный Error (например, выброшен вручную в AuthService)
-        // !e.error — проверка, чтобы не показывать технические сообщения HttpErrorResponse (типа "Http failure...")
-        this.error = e?.error?.message || (!e.error && e.message) || 'Failed to login';
-        this.cdr.detectChanges();
-        console.log(this.error);
+        error: (_e) => {
+          this.loading = false;
+          // Prefer backend-provided message when available, fall back to Error.message
+          this.error = _e?.error?.message || (!_e.error && _e.message) || 'Failed to login';
+          this.cdr.detectChanges();
       },
     });
   }

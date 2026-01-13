@@ -4,13 +4,11 @@ import { RouterModule, Routes } from '@angular/router';
 const routes: Routes = [
   {
     path: 'admin',
-    loadChildren: () =>
-      import('./features/admin/admin-module').then((m) => m.AdminModule),
+    loadChildren: () => import('./features/admin/admin-module').then((m) => m.AdminModule),
   },
   {
     path: '',
-    loadChildren: () =>
-      import('./features/public/public-module').then((m) => m.PublicModule),
+    loadChildren: () => import('./features/public/public-module').then((m) => m.PublicModule),
   },
   { path: '**', redirectTo: '' },
 ];

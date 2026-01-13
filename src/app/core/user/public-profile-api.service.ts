@@ -13,7 +13,7 @@ export class PublicProfileApiService {
 
   getByUsername(username: string): Observable<PublicProfileResponse> {
     return this.http.get<PublicProfileResponse>(
-      `/api/profile/public/${encodeURIComponent(username)}`
+      `/api/profile/public/${encodeURIComponent(username)}`,
     );
   }
 }

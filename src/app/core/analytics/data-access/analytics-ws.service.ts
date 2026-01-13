@@ -31,8 +31,8 @@ export class AnalyticsWsService {
           try {
             const payload = JSON.parse(m.body) as OnlineStatsDto;
             this.zone.run(() => this.statsSubject.next(payload));
-          } catch (e) {
-            console.error('[analytics-ws] parse error', e);
+          } catch {
+            // Ignore parse errors; consider reporting malformed messages to monitoring
           }
         });
 

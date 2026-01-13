@@ -1,7 +1,11 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { UpdateBioRequest, UpdateUsernameRequest, UserProfileResponse } from '../models/profile.model';
+import {
+  UpdateBioRequest,
+  UpdateUsernameRequest,
+  UserProfileResponse,
+} from '../models/profile.model';
 
 @Injectable({ providedIn: 'root' })
 export class ProfileApiService {

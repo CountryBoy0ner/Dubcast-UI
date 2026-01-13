@@ -1,4 +1,4 @@
-@import "primeicons/primeicons.css";
+@import 'primeicons/primeicons.css';
 
 :root {
   /* Neutral Palette */
@@ -22,7 +22,8 @@
   --warning: #ffc107;
 
   /* Typography */
-  --font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-family:
+    'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   --font-size-base: 16px;
   --line-height-base: 1.5;
 
@@ -76,7 +77,9 @@ a:hover {
   background-color: rgba(var(--surface-rgb), 0.5);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+  transition:
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast);
   box-sizing: border-box;
 }
 
