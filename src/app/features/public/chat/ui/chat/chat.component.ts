@@ -1,4 +1,7 @@
-import { Component, OnInit, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, OnDestroy, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { ChatMessageComponent } from '../chat-message/chat-message.component';
 import { ChatStoreService } from '../../state/chat-store.service';
 import { Observable, Subscription } from 'rxjs';
 import { ChatMessageDto } from '../../models/chat.model';
@@ -7,9 +10,13 @@ import { AuthService } from '../../../../../core/auth/auth.service';
   selector: 'app-chat',
   templateUrl: './chat.component.html',
   styleUrls: ['./chat.component.scss'],
-  standalone: false,
+  standalone: true,
+  imports: [CommonModule, FormsModule, ChatMessageComponent],
 })
-export class ChatComponent implements OnInit {
+export class ChatComponent implements OnInit, OnDestroy {
+  store = inject(ChatStoreService);
+  private auth = inject(AuthService);
+
   messages$!: Observable<ChatMessageDto[]>;
   loading$!: Observable<boolean>;
   input = '';
@@ -25,33 +32,25 @@ export class ChatComponent implements OnInit {
   noMorePages = false;
   pageSize = 20;
 
-  constructor(public store: ChatStoreService, private auth: AuthService) { }
-
   ngOnInit(): void {
     this.isAuthenticated$ = this.auth.isAuthenticated$;
 
     this.messages$ = this.store.messages$;
     this.loading$ = this.store.loading$;
 
-    this.subs.add(
-      this.auth.isAuthenticated$.subscribe(val => this.isAuthenticated = val)
-    );
+    this.subs.add(this.auth.isAuthenticated$.subscribe((val) => (this.isAuthenticated = val)));
 
-    // subscribe to messages to handle autoscroll
     this.subs.add(
       this.store.messages$.subscribe(() => {
-        // wait a tick for DOM update
         setTimeout(() => this.handleMessagesUpdated(), 0);
-      })
+      }),
     );
 
-    // initial load: page 0
     this.store.loadPage(0).subscribe({
       next: () => {
-        // after initial page loaded, scroll to bottom
         setTimeout(() => this.scrollToBottom(), 0);
       },
-      error: () => { },
+      error: () => {},
     });
 
     this.store.connectLive();
@@ -77,11 +76,10 @@ export class ChatComponent implements OnInit {
 
   onContainerScroll(): void {
     const el = this.messagesContainer.nativeElement;
-    // if scrolled up more than 100px from bottom, consider user scrolled up
+
     const atBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 50;
     this.userScrolledUp = !atBottom;
 
-    // if scrolled to very top — load older
     if (el.scrollTop <= 10 && !this.loadingPage && !this.store.isNoMore()) {
       this.loadOlder();
     }
@@ -101,8 +99,8 @@ export class ChatComponent implements OnInit {
     if (!el) return;
     try {
       el.scrollTop = el.scrollHeight;
-    } catch (e) {
-      // ignore
+    } catch {
+      // Ignore errors; considering reporting for monitoring
     }
   }
 
@@ -114,10 +112,10 @@ export class ChatComponent implements OnInit {
     this.loadingPage = true;
     const nextPage = this.store.getCurrentPage() + 1;
     this.store.loadPage(nextPage).subscribe({
-      next: (list) => {
+      next: (_list) => {
         setTimeout(() => {
           const newScrollHeight = el.scrollHeight;
-          // keep viewport on same message
+
           el.scrollTop = newScrollHeight - prevScrollHeight + prevScrollTop;
           this.loadingPage = false;
         }, 0);

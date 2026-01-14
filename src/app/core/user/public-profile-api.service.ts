@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
@@ -9,11 +9,11 @@ export interface PublicProfileResponse {
 
 @Injectable({ providedIn: 'root' })
 export class PublicProfileApiService {
-  constructor(private http: HttpClient) {}
+  private http = inject(HttpClient);
 
   getByUsername(username: string): Observable<PublicProfileResponse> {
     return this.http.get<PublicProfileResponse>(
-      `/api/profile/public/${encodeURIComponent(username)}`
+      `/api/profile/public/${encodeURIComponent(username)}`,
     );
   }
 }

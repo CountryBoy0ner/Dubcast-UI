@@ -1,61 +1,60 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Observable, BehaviorSubject, Subscription } from 'rxjs';
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { BehaviorSubject, Subscription } from 'rxjs';
 import { filter, tap } from 'rxjs/operators';
 
 import { RadioStoreService } from '../../state/radio-store.service';
 import { NowPlayingResponse } from '../../models/now-playing.model';
 import { PlayerService } from '../../../../../core/audio/player.service';
 import { BackgroundService } from '../../../../../core/background/background.service';
+import { CardModule } from 'primeng/card';
+import { SkeletonModule } from 'primeng/skeleton';
+import { ButtonModule } from 'primeng/button';
+import { ChatComponent } from '../../../chat/ui/chat/chat.component';
 
 @Component({
-    selector: 'app-radio-widget',
-    templateUrl: './radio-widget.component.html',
-    standalone: false,
-    styleUrls: ['./radio-widget.component.scss'],
+  selector: 'app-radio-widget',
+  templateUrl: './radio-widget.component.html',
+  standalone: true,
+  imports: [CommonModule, CardModule, SkeletonModule, ButtonModule, ChatComponent],
+  styleUrls: ['./radio-widget.component.scss'],
 })
 export class RadioWidgetComponent implements OnInit, OnDestroy {
-    loading$!: Observable<boolean>;
-    error$!: Observable<string | null>;
-    
-    private nowPlayingData = new BehaviorSubject<NowPlayingResponse | null>(null);
-    now$ = this.nowPlayingData.asObservable();
-    private nowSubscription?: Subscription;
-    
-    volume$!: Observable<number>;
-    isPlaying$!: Observable<boolean>;
+  store = inject(RadioStoreService);
+  private playerService = inject(PlayerService);
+  private backgroundService = inject(BackgroundService);
 
-    constructor(
-        public store: RadioStoreService,
-        private playerService: PlayerService,
-        private backgroundService: BackgroundService
-    ) {
-        this.loading$ = this.store.loading$;
-        this.error$ = this.store.error$;
-        this.volume$ = this.playerService.volume$;
-        this.isPlaying$ = this.playerService.isPlaying$;
-    }
+  private nowPlayingData = new BehaviorSubject<NowPlayingResponse | null>(null);
+  now$ = this.nowPlayingData.asObservable();
+  private nowSubscription?: Subscription;
 
-    ngOnInit(): void {
-        this.nowSubscription = this.store.now$.pipe(
-            tap(nowPlaying => {
-                this.backgroundService.set(nowPlaying?.artworkUrl ?? null);
-            }),
-            filter(nowPlaying => nowPlaying !== null)
-        ).subscribe(nowPlaying => {
-            this.nowPlayingData.next(nowPlaying);
-        });
-    }
+  loading$ = this.store.loading$;
+  error$ = this.store.error$;
+  volume$ = this.playerService.volume$;
+  isPlaying$ = this.playerService.isPlaying$;
 
-    ngOnDestroy(): void {
-        this.nowSubscription?.unsubscribe();
-        // Clear background when component is destroyed
-    }
+  ngOnInit(): void {
+    this.nowSubscription = this.store.now$
+      .pipe(
+        tap((nowPlaying) => {
+          this.backgroundService.set(nowPlaying?.artworkUrl ?? null);
+        }),
+        filter((nowPlaying) => nowPlaying !== null),
+      )
+      .subscribe((nowPlaying) => {
+        this.nowPlayingData.next(nowPlaying);
+      });
+  }
 
-    toggleRadio(): void {
-        this.playerService.toggle();
-    }
+  ngOnDestroy(): void {
+    this.nowSubscription?.unsubscribe();
+  }
 
-    onVolumeChange(v: number): void {
-        this.playerService.setVolume(v);
-    }
+  toggleRadio(): void {
+    this.playerService.toggle();
+  }
+
+  onVolumeChange(v: number): void {
+    this.playerService.setVolume(v);
+  }
 }

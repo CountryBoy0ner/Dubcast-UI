@@ -1,11 +1,15 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { UpdateBioRequest, UpdateUsernameRequest, UserProfileResponse } from '../models/profile.model';
+import {
+  UpdateBioRequest,
+  UpdateUsernameRequest,
+  UserProfileResponse,
+} from '../models/profile.model';
 
 @Injectable({ providedIn: 'root' })
 export class ProfileApiService {
-  constructor(private http: HttpClient) {}
+  private http = inject(HttpClient);
 
   me(): Observable<UserProfileResponse> {
     return this.http.get<UserProfileResponse>('/api/profile/me');
@@ -13,7 +17,6 @@ export class ProfileApiService {
 
   updateUsername(username: string): Observable<void> {
     const body: UpdateUsernameRequest = { username };
-    // бэк отвечает 204, поэтому void
     return this.http.put<void>('/api/profile/username', body);
   }
 

@@ -6,11 +6,8 @@ import { ChatComponent } from './ui/chat/chat.component';
 import { ChatMessageComponent } from './ui/chat-message/chat-message.component';
 import { SharedModule } from '../../../shared/shared.module';
 
-
-
 @NgModule({
-  declarations: [ChatComponent, ChatMessageComponent],
-  imports: [CommonModule, FormsModule,SharedModule],
+  imports: [CommonModule, FormsModule, SharedModule, ChatComponent, ChatMessageComponent],
   exports: [ChatComponent],
 })
 export class ChatModule {}

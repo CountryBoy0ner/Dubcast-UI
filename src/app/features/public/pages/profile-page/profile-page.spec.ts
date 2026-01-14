@@ -11,8 +11,7 @@ describe('ProfilePage', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ProfilePage],
-      imports: [CommonModule, ReactiveFormsModule, HttpClientTestingModule],
+      imports: [ProfilePage, CommonModule, ReactiveFormsModule, HttpClientTestingModule],
     }).compileComponents();
 
     fixture = TestBed.createComponent(ProfilePage);

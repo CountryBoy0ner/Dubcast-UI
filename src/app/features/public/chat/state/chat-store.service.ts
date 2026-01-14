@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { ChatApiService } from '../data-access/chat-api.service';
 import { ChatWsService } from '../data-access/chat-ws.service';
@@ -6,32 +6,32 @@ import { ChatMessageDto } from '../models/chat.model';
 
 @Injectable({ providedIn: 'root' })
 export class ChatStoreService {
+  private api = inject(ChatApiService);
+  private ws = inject(ChatWsService);
+
   private messagesSubject = new BehaviorSubject<ChatMessageDto[]>([]);
   private loadingSubject = new BehaviorSubject<boolean>(false);
   private messagesSub = new BehaviorSubject<ChatMessageDto[]>([]);
-
 
   messages$ = this.messagesSubject.asObservable();
   loading$ = this.loadingSubject.asObservable();
 
   private PAGE_SIZE = 20;
-  private currentPage = 0; // 0 = latest page
+  private currentPage = 0;
   private noMore = false;
 
   private _liveConnected = false;
 
-  constructor(private api: ChatApiService, private ws: ChatWsService) {}
-
-  // Load a page from server. page=0 is the latest page.
   loadPage(page = 0): Observable<ChatMessageDto[]> {
     if (page !== 0 && this.noMore) {
-      // return empty observable
       return new Observable<ChatMessageDto[]>((sub) => {
         sub.next([]);
         sub.complete();
       });
     }
 
+    // Load a page of chat messages from the API. Business intent: support
+    // infinite scroll / pagination while caching the current pages in memory.
     this.loadingSubject.next(true);
     return this.api.getPage(page, this.PAGE_SIZE).pipe(
       tap((list) => {
@@ -50,7 +50,7 @@ export class ChatStoreService {
           }
         }
         this.loadingSubject.next(false);
-      })
+      }),
     );
   }
 
@@ -68,7 +68,7 @@ export class ChatStoreService {
     this.ws.connect();
     this.ws.incoming$.subscribe((m) => {
       const cur = this.messagesSubject.value || [];
-      
+
       this.messagesSubject.next([...cur, m]);
     });
   }
@@ -78,11 +78,10 @@ export class ChatStoreService {
     if (!trimmed) return;
 
     this.api.send(trimmed).subscribe({
-      next: (saved) => {
+      next: (_saved) => {},
+      error: (_e) => {
       },
-      error: (e) => {
-        console.error('[chat][send] failed', e);
-      }
     });
   }
 }
+ 

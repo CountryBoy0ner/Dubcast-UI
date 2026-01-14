@@ -1,6 +1,5 @@
-// d:\Diplom\Dubcast\dubcast-ui\src\app\shared\components\global-player\global-player.component.ts
-
-import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
+import { Component, OnInit, ViewChild, OnDestroy, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { Subscription } from 'rxjs';
 import { RadioStoreService } from '../../../features/public/radio/state/radio-store.service';
 import { PlayerService } from '../../../core/audio/player.service';
@@ -10,14 +9,23 @@ import { NowPlayingResponse } from '../../../features/public/radio/models/now-pl
 import { AfterViewInit } from '@angular/core';
 import { BackgroundService } from '../../../core/background/background.service';
 
-
 @Component({
   selector: 'app-global-player',
   templateUrl: './global-player.component.html',
   styleUrls: ['./global-player.component.scss'],
-  standalone: false
+  standalone: true,
+  imports: [CommonModule, SoundcloudPlayerComponent],
 })
+/**
+ * Global player sits in the app shell and coordinates playback for the whole app.
+ * Business intent: Keep a single authoritative player instance that can sync
+ * with server-reported now-playing state and control the embedded SoundCloud player.
+ */
 export class GlobalPlayerComponent implements OnInit, AfterViewInit, OnDestroy {
+  private store = inject(RadioStoreService);
+  private playerService = inject(PlayerService);
+  private bg = inject(BackgroundService);
+
   @ViewChild('player') player?: SoundcloudPlayerComponent;
 
   volume = 70;
@@ -28,52 +36,40 @@ export class GlobalPlayerComponent implements OnInit, AfterViewInit, OnDestroy {
   private lastKey: string | null = null;
   private playLock = false;
 
-  constructor(
-    private store: RadioStoreService,
-    private playerService: PlayerService,
-    private bg: BackgroundService
-  ) { }
-
-
   ngOnInit(): void {
-    // Подключаемся к сокетам и загружаем данные (теперь это делает глобальный плеер)
+    // Connect to live now-playing updates and fetch the initial state.
     this.store.connectLiveNowPlaying();
     this.store.loadNowPlaying();
 
-    // Слушаем громкость
+    // Subscribe to player volume and playing state to reflect UI controls.
     this.sub.add(
-      this.playerService.volume$.subscribe(v => {
+      this.playerService.volume$.subscribe((v) => {
         this.volume = v;
-      })
+      }),
     );
 
-    // Слушаем команду Play/Pause
     this.sub.add(
-      this.playerService.isPlaying$.subscribe(playing => {
+      this.playerService.isPlaying$.subscribe((playing) => {
         this.isPlaying = playing;
         if (playing) {
-          // При включении проверяем, нужно ли загрузить трек или просто продолжить
           this.syncPlayerState();
         } else {
           if (this.player) this.player.pause();
         }
-      })
+      }),
     );
 
-    // Слушаем треки
     this.sub.add(
       this.store.now$.subscribe((now) => {
         this.latestNow = now;
 
-        // ✅ фон всегда обновляется независимо от страницы
         this.bg.set(now?.artworkUrl ?? null);
 
         if (this.isPlaying) {
           this.syncPlayerState();
         }
-      })
+      }),
     );
-
   }
 
   ngOnDestroy(): void {
@@ -90,13 +86,13 @@ export class GlobalPlayerComponent implements OnInit, AfterViewInit, OnDestroy {
 
     const key = `${now.trackUrl}|${now.startedAt ?? ''}`;
 
-    // Если трек уже загружен (ключ совпадает), просто играем
+    // If the track didn't change just ensure the embedded player is playing.
     if (this.lastKey === key) {
       if (this.player) this.player.play();
       return;
     }
 
-    // Если трек новый или еще не загружен
+    // Otherwise start playback from the reported position.
     this.lastKey = key;
     this.playFromNow(now);
   }
@@ -107,13 +103,15 @@ export class GlobalPlayerComponent implements OnInit, AfterViewInit, OnDestroy {
     this.playLock = true;
     setTimeout(() => (this.playLock = false), 1000);
 
+    // Convert server's startedAt/duration to a millisecond offset and instruct
+    // the embedded player to seek/play from that position.
     const posMs = this.computePositionMs(now);
     this.player.load(now.trackUrl!, true, posMs);
   }
 
   private computePositionMs(now: NowPlayingResponse): number {
     if (!now.startedAt || !now.durationSeconds) return 0;
-    const started = Date.parse(now.startedAt as any);
+    const started = Date.parse(String(now.startedAt));
     if (Number.isNaN(started)) return 0;
 
     const elapsedSec = Math.max(0, (Date.now() - started) / 1000);

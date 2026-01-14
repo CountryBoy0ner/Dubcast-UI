@@ -9,11 +9,10 @@ describe('RadioPage', () => {
   let fixture: ComponentFixture<RadioPage>;
 
   beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [RadioPage],
-      imports: [CommonModule],
-      schemas: [CUSTOM_ELEMENTS_SCHEMA],
-    }).compileComponents();
+      await TestBed.configureTestingModule({
+        imports: [RadioPage, CommonModule],
+        schemas: [CUSTOM_ELEMENTS_SCHEMA],
+      }).compileComponents();
 
     fixture = TestBed.createComponent(RadioPage);
     component = fixture.componentInstance;
