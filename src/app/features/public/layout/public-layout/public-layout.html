@@ -4,8 +4,7 @@
     <app-mini-player class="header__mini-player"></app-mini-player>
 
     <nav class="nav">
-
-      <div class="live-stats" *ngIf="onlineCount$ | async as count" title="Сейчас онлайн">
+      <div class="live-stats" *ngIf="onlineCount$ | async as count" title="On air">
         <div class="live-indicator">
           <span class="pulsing-dot"></span>
         </div>
@@ -13,8 +12,13 @@
         <span class="count">{{ count }}</span>
       </div>
 
-      <a routerLink="/radio" class="nav__link" routerLinkActive="active"
-        [routerLinkActiveOptions]="{ exact: true }">Radio</a>
+      <a
+        routerLink="/radio"
+        class="nav__link"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }"
+        >Radio</a
+      >
 
       <!-- Guest -->
       <ng-container *ngIf="!(isAuth$ | async); else authed">
@@ -26,8 +30,11 @@
       <ng-template #authed>
         <span class="nav__user" title="Logged in as {{ displayName$ | async }}">
           {{ displayName$ | async }}
-          <small *ngIf="(isAuth$ | async) && !(hasUsername$ | async)" class="no-username"
-            title="You don't have a username set. Set it in your Profile.">
+          <small
+            *ngIf="(isAuth$ | async) && !(hasUsername$ | async)"
+            class="no-username"
+            title="You don't have a username set. Set it in your Profile."
+          >
             (no username)
           </small>
         </span>
@@ -35,7 +42,6 @@
         <a routerLink="/profile" class="nav__link" routerLinkActive="active">Profile</a>
         <button type="button" class="nav__link nav__btn" (click)="logout()">Logout</button>
       </ng-template>
-     
     </nav>
   </div>
 </header>
@@ -45,7 +51,5 @@
 </main>
 
 <footer class="footer">
-  <div class="footer__inner">
-    &copy; 2024 Dubcast. All rights reserved.
-  </div>
+  <div class="footer__inner">&copy; 2026 Dubcast. All rights reserved.</div>
 </footer>

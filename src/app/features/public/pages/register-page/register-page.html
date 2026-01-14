@@ -10,7 +10,10 @@
         formControlName="email"
         placeholder="example@mail.com"
       />
-      <div class="auth-field-error" *ngIf="form.get('email')?.touched && form.get('email')?.invalid">
+      <div
+        class="auth-field-error"
+        *ngIf="form.get('email')?.touched && form.get('email')?.invalid"
+      >
         Enter a valid email
       </div>
 
@@ -21,7 +24,10 @@
         formControlName="password"
         placeholder="Minimum 6 characters"
       />
-      <div class="auth-field-error" *ngIf="form.get('password')?.touched && form.get('password')?.invalid">
+      <div
+        class="auth-field-error"
+        *ngIf="form.get('password')?.touched && form.get('password')?.invalid"
+      >
         Password must be at least 6 characters
       </div>
 
@@ -32,8 +38,13 @@
         formControlName="confirmPassword"
         placeholder="Repeat password"
       />
-      <div class="auth-field-error"
-           *ngIf="form.get('confirmPassword')?.touched && form.get('confirmPassword')?.value !== form.get('password')?.value">
+      <div
+        class="auth-field-error"
+        *ngIf="
+          form.get('confirmPassword')?.touched &&
+          form.get('confirmPassword')?.value !== form.get('password')?.value
+        "
+      >
         Passwords do not match
       </div>
 

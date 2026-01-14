@@ -12,11 +12,10 @@
         <a href="/" class="logo">Dubcast</a>
 
         <nav class="nav">
-            <!-- гость -->
+
             <a th:if="${!authenticated}" th:href="@{/login}" class="nav__link">Login</a>
             <a th:if="${!authenticated}" th:href="@{/register}" class="nav__link">Register</a>
 
-            <!-- залогинен -->
             <span th:if="${authenticated}" class="nav__user">
                 Logged in as <span th:text="${principalName}">user</span>
             </span>
@@ -49,7 +48,6 @@
         <p th:if="${bio != null}" th:text="${bio}">no bio yet</p>
         <p th:if="${bio == null}">no bio yet</p>
 
-        <!-- Блок редактирования только для владельца профиля -->
         <div th:if="${canEdit}">
             <hr/>
 
@@ -82,7 +80,6 @@
                 <button type="submit">Save bio</button>
             </form>
 
-            <!-- сообщения об успехе после редиректа -->
             <div th:if="${param.bioUpdated}">Bio updated.</div>
             <div th:if="${param.usernameUpdated}">Username updated.</div>
         </div>

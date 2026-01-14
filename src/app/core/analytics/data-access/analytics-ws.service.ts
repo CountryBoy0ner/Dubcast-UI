@@ -1,4 +1,4 @@
-import { Injectable, NgZone } from '@angular/core';
+import { Injectable, NgZone, inject } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { Client, IMessage } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
@@ -8,6 +8,8 @@ import { AnalyticsHeartbeatMessage } from '../models/analytics-heartbeat.model';
 
 @Injectable({ providedIn: 'root' })
 export class AnalyticsWsService {
+  private zone = inject(NgZone);
+
   private client?: Client;
   private connected = false;
 
@@ -15,8 +17,6 @@ export class AnalyticsWsService {
   stats$ = this.statsSubject.asObservable();
 
   private pendingHeartbeat: AnalyticsHeartbeatMessage | null = null;
-
-  constructor(private zone: NgZone) {}
 
   start(): void {
     if (this.client?.active) return;
@@ -31,12 +31,11 @@ export class AnalyticsWsService {
           try {
             const payload = JSON.parse(m.body) as OnlineStatsDto;
             this.zone.run(() => this.statsSubject.next(payload));
-          } catch (e) {
-            console.error('[analytics-ws] parse error', e);
+          } catch {
+            // Ignore parse errors; considering reporting for monitoring
           }
         });
 
-        // если пока не было соединения — дошлём последний heartbeat
         if (this.pendingHeartbeat) {
           const msg = this.pendingHeartbeat;
           this.pendingHeartbeat = null;
@@ -52,7 +51,6 @@ export class AnalyticsWsService {
   }
 
   sendHeartbeat(msg: AnalyticsHeartbeatMessage): void {
-    // если нет коннекта — запомним последний heartbeat
     if (!this.client || !this.client.connected) {
       this.pendingHeartbeat = msg;
       return;

@@ -1,0 +1,9 @@
+.angular
+node_modules
+dist
+out
+e2e-playwright
+src/playwright.config.ts
+.vscode
+package-lock.json
+npm-debug.log

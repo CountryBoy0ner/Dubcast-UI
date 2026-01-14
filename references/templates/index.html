@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <title>Dubcast Radio</title>
 
-    <!-- основной стиль -->
     <link rel="stylesheet" th:href="@{/css/main.css}">
 </head>
 <body class="page">
@@ -14,11 +13,9 @@
         <a href="/" class="logo">Dubcast</a>
 
         <nav class="nav">
-            <!-- Гость: Login / Register -->
             <a th:if="${!authenticated}" th:href="@{/login}" class="nav__link">Login</a>
             <a th:if="${!authenticated}" th:href="@{/register}" class="nav__link">Register</a>
 
-            <!-- Залогинен: имя, профиль, logout -->
             <span th:if="${authenticated}" class="nav__user">
                 Logged in as <span th:text="${principalName}">user</span>
             </span>
@@ -47,7 +44,6 @@
         <h2 class="now-playing__title">Now playing</h2>
 
         <div class="now-playing__content">
-            <!-- Обложка -->
             <div class="now-playing__artwork-wrapper">
                 <img
                         id="artwork"
@@ -57,7 +53,6 @@
                         style="display: none;">
             </div>
 
-            <!-- Информация о треке -->
             <div class="now-playing__info">
                 <p id="track-title" class="now-playing__track">
                     Now playing: nothing right now.
@@ -68,17 +63,12 @@
             </div>
         </div>
 
-        <!--
-            Кнопка "плей/пауза" — должна быть круглой, как в аудиоплеерах.
-            Дизайн и круглую форму потом задавать через CSS по классам .btn / .btn--round / .btn--active
-        -->
         <div class="now-playing__controls">
             <button id="start-radio-btn" class="btn btn--primary btn--round">
                 Start radio
             </button>
         </div>
 
-        <!-- Громкость -->
         <div class="now-playing__volume">
             <label for="volume-range" class="now-playing__volume-label">Volume:</label>
             <input
@@ -95,7 +85,6 @@
             <span id="now-listening-count">0</span>
         </div>
 
-        <!-- Debug: показывать / скрывать реальный плеер -->
         <div class="now-playing__debug">
             <label class="now-playing__debug-label">
                 <input type="checkbox" id="show-player-checkbox" checked>
@@ -103,18 +92,15 @@
             </label>
         </div>
 
-        <!-- Контейнер, куда будет вставляться embed-код -->
         <div id="sc-player-wrapper" class="now-playing__player-wrapper">
-            <!-- сюда js подставит iframe -->
         </div>
     </section>
 
-    <!-- CHAT SECTION -->
     <section class="chat">
         <h2 class="chat__title">Chat</h2>
 
         <div id="chat-messages" class="chat__messages">
-            <!-- сюда JS будет добавлять сообщения -->
+            <!-- messages will be appearing here -->
         </div>
 
         <div class="chat__input-row">
@@ -140,9 +126,6 @@
 <!-- SoundCloud Widget API -->
 <script src="https://w.soundcloud.com/player/api.js"></script>
 
-<!-- флаг авторизации из Spring Security -->
-
-<!-- флаг авторизации для JS (чат) -->
 <script th:inline="javascript">
     /*<![CDATA[*/
     window.isAuthenticated = [[${authenticated}]];
@@ -152,15 +135,15 @@
 
 <script>
     // ----------- STATE -----------
-    let radioEnabled = false;      // радио включено пользователем или нет (тоггл)
+    let radioEnabled = false;
     let currentPlaylistId = null;
     let stompClient = null;
-    let currentPayload = null;     // NowPlayingResponse
-    let scWidget = null;           // SC.Widget
+    let currentPayload = null;
+    let scWidget = null;
     let userVolume = 70;
 
     // === online analytics ===
-    const HEARTBEAT_INTERVAL_MS = 5000;  // раз в 5 секунд
+    const HEARTBEAT_INTERVAL_MS = 5000;
     let analyticsHeartbeatTimer = null;
     const nowListeningCountEl = document.getElementById('now-listening-count');
 
@@ -178,15 +161,13 @@
     const chatSendBtn = document.getElementById('chat-send-btn');
     const chatErrorEl = document.getElementById('chat-error');
 
-    // Пагинация истории чата
     let currentPage = 0;
     const pageSize = 50;
     let loadingPage = false;
     let noMorePages = false;
 
-    // если гость — подскажем в placeholder
     if (!window.isAuthenticated && chatInputEl) {
-        chatInputEl.placeholder = 'Войдите, чтобы писать в чат';
+        chatInputEl.placeholder = 'Log in to message in chat';
     }
 
     // ----------- INIT VOLUME -----------
@@ -237,7 +218,7 @@
 
         titleEl.innerText = 'Now playing: ' + (payload.title || 'unknown track');
 
-        currentPlaylistId = payload.playlistTitle ? 1 : null; // просто пример
+        currentPlaylistId = payload.playlistTitle ? 1 : null;
         if (payload.playlistTitle) {
             playlistTitleEl.innerText = 'Playlist: ' + payload.playlistTitle;
         } else {
@@ -305,7 +286,6 @@
             console.error('[SC] ERROR', e);
         });
 
-        // когда трек закончился, сами узнаём, что сейчас по расписанию
         scWidget.bind(SC.Widget.Events.FINISH, function () {
             console.log('[SC] FINISH');
             if (!radioEnabled) {
@@ -332,7 +312,7 @@
         });
     }
 
-    // ----------- LOAD & PLAY (фикс громкости) -----------
+    // ----------- LOAD & PLAY -----------
 
     function loadAndPlayFromPayload(payload) {
         if (!payload || !payload.playing) {
@@ -388,7 +368,7 @@
             const payload = await resp.json();
             console.log('[REST] initial payload', payload);
             currentPayload = payload;
-            updateUiFromPayload(payload);   // только UI
+            updateUiFromPayload(payload);
         } catch (e) {
             console.error('[REST] current-for-ui error', e);
         }
@@ -397,14 +377,12 @@
     // ----------- START RADIO BUTTON (TOGGLE) -----------
 
     startBtn.addEventListener('click', async function () {
-        // переключаем состояние
         radioEnabled = !radioEnabled;
 
         if (!radioEnabled) {
-            // ВЫКЛЮЧЕНИЕ РАДИО
             console.log('[Radio] turned OFF by user');
             startBtn.innerText = 'Start radio';
-            startBtn.classList.remove('btn--active'); // визуальное состояние "не играет"
+            startBtn.classList.remove('btn--active');
             if (scWidget) {
                 scWidget.pause();
             }
@@ -413,13 +391,10 @@
             return;
         }
 
-        // ВКЛЮЧЕНИЕ РАДИО
         console.log('[Radio] turned ON by user');
         startBtn.innerText = 'Radio is playing';
-        startBtn.classList.add('btn--active'); // визуальное состояние "играет"
+        startBtn.classList.add('btn--active');
         startAnalyticsHeartbeatLoop();
-
-
 
         try {
             if (!currentPayload) {
@@ -428,7 +403,7 @@
                 console.log('[Radio] /api/radio/now (start) status =', resp.status);
                 if (resp.status === 204 || !resp.ok) {
                     console.log('[REST] no current track on start');
-                    // откатываем состояние, т.к. по факту ничего не играет
+
                     radioEnabled = false;
                     startBtn.innerText = 'Start radio';
                     startBtn.classList.remove('btn--active');
@@ -438,24 +413,19 @@
             }
 
             updateUiFromPayload(currentPayload);
-            // ВАЖНО: при каждом включении пересчитываем позицию по startedAt
             loadAndPlayFromPayload(currentPayload);
         } catch (e) {
             console.error('[Radio] start-radio exception', e);
-            // на всякий случай откат кнопки
             radioEnabled = false;
             startBtn.innerText = 'Start radio';
             startBtn.classList.remove('btn--active');
 
-            // стопаем heartbeats
             stopAnalyticsHeartbeatLoop(true);
-
         }
     });
 
     // ======================= CHAT =======================
 
-    // общий конструктор DOM-элемента сообщения
     function createChatMessageElement(msg) {
         const div = document.createElement('div');
         div.className = 'chat__message';
@@ -468,11 +438,10 @@
         return div;
     }
 
-    // Добавить одно сообщение в конец (для WebSocket и отправки)
     function appendChatMessage(msg) {
         const div = createChatMessageElement(msg);
         chatMessagesEl.appendChild(div);
-        // прокрутка вниз
+
         chatMessagesEl.scrollTop = chatMessagesEl.scrollHeight;
     }
 
@@ -492,9 +461,8 @@
         const text = chatInputEl.value.trim();
         if (!text) return;
 
-        // гость — не отправляем, а показываем подсказку
         if (!window.isAuthenticated) {
-            showChatError('Чтобы написать в чат, войдите в аккаунт.');
+            showChatError('Log in to message in chat');
             return;
         }
 
@@ -508,8 +476,6 @@
         chatInputEl.value = '';
     }
 
-    // ----------- ЗАГРУЗКА ИСТОРИИ (постранично) -----------
-
     async function loadOlderMessages() {
         if (!chatMessagesEl) return;
         if (loadingPage || noMorePages) return;
@@ -522,7 +488,7 @@
                 console.error('[CHAT] page load error', resp.status);
                 return;
             }
-            const list = await resp.json(); // Array<ChatMessageDto>
+            const list = await resp.json();
 
             if (list.length === 0) {
                 noMorePages = true;
@@ -532,7 +498,6 @@
             const prevScrollHeight = chatMessagesEl.scrollHeight;
 
             if (currentPage === 0) {
-                // первая страница — просто рисуем всё и скроллим вниз
                 chatMessagesEl.innerHTML = '';
                 list.forEach(msg => {
                     const el = createChatMessageElement(msg);
@@ -540,13 +505,12 @@
                 });
                 chatMessagesEl.scrollTop = chatMessagesEl.scrollHeight;
             } else {
-                // последующие страницы — более старые сообщения, подгружаем сверху
                 for (let i = list.length - 1; i >= 0; i--) {
                     const el = createChatMessageElement(list[i]);
                     chatMessagesEl.insertBefore(el, chatMessagesEl.firstChild);
                 }
                 const newScrollHeight = chatMessagesEl.scrollHeight;
-                // сохраняем позицию прокрутки, чтобы не "прыгало"
+
                 chatMessagesEl.scrollTop = newScrollHeight - prevScrollHeight;
             }
 
@@ -568,7 +532,6 @@
         }
     }
 
-    // Подгружать старые сообщения при прокрутке вверх
     if (chatMessagesEl) {
         chatMessagesEl.addEventListener('scroll', () => {
             if (chatMessagesEl.scrollTop === 0) {
@@ -597,33 +560,29 @@
         console.log('[WS] Opening Web Socket...');
         const socket = new SockJS('/radio-ws');
         stompClient = Stomp.over(socket);
-        // stompClient.debug = null;
 
         stompClient.connect({}, function (frame) {
             console.log('[WS] connected:', frame);
 
-            // now-playing
             stompClient.subscribe('/topic/now-playing', function (message) {
                 const payload = JSON.parse(message.body);
                 console.log('[WS] now-playing payload', payload);
                 handleNowPlaying(payload);
             });
 
-            // CHAT
             stompClient.subscribe('/topic/chat', function (message) {
-                const payload = JSON.parse(message.body); // ChatMessageDto
+                const payload = JSON.parse(message.body);
                 console.log('[WS][CHAT] message', payload);
                 appendChatMessage(payload);
             });
+
             // === ONLINE ANALYTICS ===
             stompClient.subscribe('/topic/analytics/online', function (message) {
-                const stats = JSON.parse(message.body); // OnlineStatsDto
+                const stats = JSON.parse(message.body);
                 console.log('[WS][ANALYTICS] stats', stats);
                 updateOnlineStats(stats);
             });
 
-            // если пользователь уже успел тыкнуть "Start radio" до коннекта —
-            // сразу запускаем цикл heartbeats
             if (radioEnabled) {
                 startAnalyticsHeartbeatLoop();
             }
@@ -660,33 +619,29 @@
 
     function sendAnalyticsHeartbeat(listening) {
         if (!stompClient || !stompClient.connected) {
-            // просто тихо выходим, без ошибок
             return;
         }
 
         const payload = {
             page: '/radio',
-            // если бек ждёт trackId — шлём его, если есть
+
             trackId: currentPayload && currentPayload.playing
                 ? currentPayload.trackId
                 : null,
-            // если в HeartbeatMessage есть булево поле — используем
+
             listening: listening
         };
 
-        // этот destination должен совпадать с @MessageMapping на беке
         stompClient.send('/app/analytics.heartbeat', {}, JSON.stringify(payload));
     }
 
     function startAnalyticsHeartbeatLoop() {
-        // сразу отправили "я слушаю"
         sendAnalyticsHeartbeat(true);
 
         if (analyticsHeartbeatTimer) {
             clearInterval(analyticsHeartbeatTimer);
         }
         analyticsHeartbeatTimer = setInterval(() => {
-            // пока радио включено — шлём heartbeats
             if (radioEnabled) {
                 sendAnalyticsHeartbeat(true);
             }
@@ -699,7 +654,6 @@
             analyticsHeartbeatTimer = null;
         }
         if (sendOffEvent) {
-            // одного off-ивента достаточно, бек сам обнулит сессию
             sendAnalyticsHeartbeat(false);
         }
     }
@@ -711,16 +665,14 @@
         console.log('[BOOT] Page loaded, init WS + fetch current + chat history');
         connectWs();
         fetchCurrentForUiOnly();
-        loadInitialChatPage(); // вместо старого loadChatHistory()
+        loadInitialChatPage();
     });
 
     window.addEventListener('beforeunload', () => {
-        // один off-ивент и остановка таймера
         stopAnalyticsHeartbeatLoop(true);
     });
 
 </script>
-
 
 </body>
 </html>

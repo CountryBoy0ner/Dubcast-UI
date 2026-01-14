@@ -1,38 +1,33 @@
-import { ChangeDetectorRef, Component } from '@angular/core';
-import { FormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ChangeDetectorRef, Component, inject } from '@angular/core';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { Router, RouterModule } from '@angular/router';
+import { CommonModule } from '@angular/common';
 import { AuthService } from '../../../../core/auth/auth.service';
 @Component({
   selector: 'app-login-page',
   templateUrl: './login-page.html',
-  standalone: false,
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule, RouterModule],
   styleUrls: ['./login-page.scss'],
 })
 export class LoginPage {
+  private fb = inject(FormBuilder);
+  private auth = inject(AuthService);
+  private router = inject(Router);
+  private cdr = inject(ChangeDetectorRef);
+
   loading = false;
   error = '';
-  form: UntypedFormGroup;
-
-  constructor(
-    private fb: FormBuilder,
-    private auth: AuthService,
-    private router: Router,
-    private cdr: ChangeDetectorRef
-  ) {
-    this.form = this.fb.group({
-      emailOrUsername: ['', [Validators.required]],
-      password: ['', [Validators.required, Validators.minLength(3)]], //todo
-    });
-  }
+  form: FormGroup = this.fb.group({
+    emailOrUsername: ['', [Validators.required]],
+    password: ['', [Validators.required, Validators.minLength(3)]],
+  });
 
   submit(): void {
-    console.log("Login form submitted");
-    
     this.error = '';
 
     if (this.form.invalid) {
       this.form.markAllAsTouched();
-      console.log('payload', this.form.getRawValue());
       return;
     }
 
@@ -41,19 +36,13 @@ export class LoginPage {
 
     this.auth.login(v.emailOrUsername, v.password).subscribe({
       next: () => {
-        console.log("successful login");
-
         this.loading = false;
         this.router.navigate(['/radio']);
       },
-      error: (e: any) => {
-        this.loading = false;
-        // e.error.message — если пришла ошибка от бэка (HttpErrorResponse)
-        // e.message — если это обычный Error (например, выброшен вручную в AuthService)
-        // !e.error — проверка, чтобы не показывать технические сообщения HttpErrorResponse (типа "Http failure...")
-        this.error = e?.error?.message || (!e.error && e.message) || 'Failed to login';
-        this.cdr.detectChanges();
-        console.log(this.error);
+        error: (_e) => {
+          this.loading = false;
+          this.error = _e?.error?.message || (!_e.error && _e.message) || 'Failed to login';
+          this.cdr.detectChanges();
       },
     });
   }

@@ -1,13 +1,13 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
 import { catchError, shareReplay } from 'rxjs/operators';
 import { PublicProfileApiService, PublicProfileResponse } from './public-profile-api.service';
 
 @Injectable({ providedIn: 'root' })
 export class PublicProfileCacheService {
-  private cache = new Map<string, Observable<PublicProfileResponse>>();
+  private api = inject(PublicProfileApiService);
 
-  constructor(private api: PublicProfileApiService) {}
+  private cache = new Map<string, Observable<PublicProfileResponse>>();
 
   get(username: string): Observable<PublicProfileResponse> {
     const key = username.trim();
@@ -21,7 +21,7 @@ export class PublicProfileCacheService {
       catchError((err) => {
         this.cache.delete(key);
         throw err;
-      })
+      }),
     );
 
     this.cache.set(key, req$);

@@ -1,7 +1,7 @@
 :host {
   display: flex;
   flex-direction: column;
-  flex: 1; // Grow to fill the .main-content wrapper
+  flex: 1;
 }
 
 .header {
@@ -47,7 +47,9 @@
   color: var(--muted);
   padding: 6px 12px;
   border-radius: var(--radius);
-  transition: color var(--transition-fast), background-color var(--transition-fast);
+  transition:
+    color var(--transition-fast),
+    background-color var(--transition-fast);
 }
 
 .nav__link:hover,
@@ -85,12 +87,11 @@
   align-items: center;
   gap: 8px;
   padding: 6px 12px;
-  
-  // Glassmorphism эффект
+
   background: rgba(255, 255, 255, 0.08);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 20px;
-  
+
   color: var(--text);
   font-size: 0.9rem;
   font-weight: 600;
@@ -116,7 +117,7 @@
 .pulsing-dot {
   width: 8px;
   height: 8px;
-  background-color: #22c55e; // Зеленый цвет для онлайна
+  background-color: #22c55e;
   border-radius: 50%;
   position: relative;
 
@@ -144,4 +145,26 @@
     transform: translate(-50%, -50%) scale(3);
     opacity: 0;
   }
+}
+
+.footer {
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5;
+  pointer-events: none;
+}
+
+.footer__inner {
+  pointer-events: auto;
+  text-align: center;
+}
+
+.main {
+  padding-bottom: 56px;
 }
