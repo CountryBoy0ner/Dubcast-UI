@@ -1,11 +1,49 @@
-import { Component } from '@angular/core';
-
+import { ChangeDetectorRef, Component, inject } from '@angular/core';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { Router, RouterModule } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { AuthService } from '../../../../core/auth/auth.service';
 @Component({
   selector: 'app-login-page',
-  standalone: false,
   templateUrl: './login-page.html',
-  styleUrl: './login-page.scss',
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule, RouterModule],
+  styleUrls: ['./login-page.scss'],
 })
 export class LoginPage {
+  private fb = inject(FormBuilder);
+  private auth = inject(AuthService);
+  private router = inject(Router);
+  private cdr = inject(ChangeDetectorRef);
 
+  loading = false;
+  error = '';
+  form: FormGroup = this.fb.group({
+    emailOrUsername: ['', [Validators.required]],
+    password: ['', [Validators.required, Validators.minLength(3)]],
+  });
+
+  submit(): void {
+    this.error = '';
+
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
+
+    this.loading = true;
+    const v = this.form.getRawValue();
+
+    this.auth.login(v.emailOrUsername, v.password).subscribe({
+      next: () => {
+        this.loading = false;
+        this.router.navigate(['/radio']);
+      },
+        error: (_e) => {
+          this.loading = false;
+          this.error = _e?.error?.message || (!_e.error && _e.message) || 'Failed to login';
+          this.cdr.detectChanges();
+      },
+    });
+  }
 }

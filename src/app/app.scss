@@ -1,0 +1,73 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  min-height: 100vh;
+  z-index: 1;
+}
+
+:host::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+
+  background-image: var(--background-image-url);
+  background-size: cover;
+  background-position: center;
+
+  filter: blur(90px) brightness(0.35) saturate(1.1);
+  transform: scale(1.25);
+
+  opacity: 1;
+  transition: opacity 800ms ease-in-out;
+}
+
+:host::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+
+  background: rgba(0, 0, 0, 0.35);
+
+  background: rgba(0, 0, 0, 0.45);
+
+  background-image:
+    url('../assets/1.gif');
+
+  background-size: 540px 540px;
+  opacity: 0.12;
+}
+
+.main-content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  position: relative;
+  z-index: 2;
+}
+
+.footer {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.footer__inner {
+  pointer-events: auto;
+  text-align: center;
+}
+
+.main {
+  padding-bottom: 56px;
+}

@@ -1,0 +1,42 @@
+<p-card class="radio-widget-card-root">
+  <ng-template pTemplate="title">
+    <div class="title-row">
+      <div class="title-text">
+        <div class="title">Now Playing</div>
+      </div>
+      <a pButton class="p-button-text" (click)="store.loadNowPlaying()">Refresh</a>
+    </div>
+  </ng-template>
+  <ng-template pTemplate="content">
+    <ng-container *ngIf="loading$ | async; else loaded">
+      <div class="skeleton-row">
+        <p-skeleton width="96px" height="96px"></p-skeleton>
+        <div class="skeleton-text">
+          <p-skeleton width="70%" height="18px"></p-skeleton>
+          <p-skeleton width="40%" height="14px"></p-skeleton>
+        </div>
+      </div>
+    </ng-container>
+    <ng-template #loaded>
+      <ng-container *ngIf="error$ | async as err; else ok">
+        <div>{{ err }}</div>
+      </ng-container>
+      <ng-template #ok>
+        <ng-container *ngIf="now$ | async as now; else nothing">
+          <div class="row" *ngIf="now?.playing; else nothing">
+            <img *ngIf="now.artworkUrl" class="art" [src]="now.artworkUrl" alt="Artwork" />
+            <div class="info">
+              <div class="track">{{ now.title || 'Unknown Track' }}</div>
+              <div class="meta">Playlist: {{ now.playlistTitle || 'None' }}</div>
+            </div>
+          </div>
+        </ng-container>
+        <ng-template #nothing>
+          <div class="empty">Nothing is playing right now.</div>
+        </ng-template>
+
+        <div class="chat"><app-chat></app-chat></div>
+      </ng-template>
+    </ng-template>
+  </ng-template>
+</p-card>

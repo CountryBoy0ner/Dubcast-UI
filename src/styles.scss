@@ -1,70 +1,53 @@
-@import "primeicons/primeicons.css";
+@import 'primeicons/primeicons.css';
 
-
-/* Neutral base */
 :root {
-  --bg: #131313;
-  --surface: #202020;
-  --surface-2: #292929;
-  --border: rgba(255, 255, 255, 0.10);
-  --text: rgba(255, 255, 255, 0.92);
-  --muted: rgba(255, 255, 255, 0.68);
+  /* Neutral Palette */
+  --bg: #101010;
+  --surface: #1c1c1c;
+  --surface-rgb: 28, 28, 28;
+  --surface-hover: rgba(255, 255, 255, 0.08);
+  --surface-active: rgba(255, 255, 255, 0.12);
+  --text: #f0f0f0;
+  --muted: #d2d2d2;
+  --border: rgba(255, 255, 255, 0.153);
 
-  /* Accent / brand */
-  --accent: #e0e0e0; /* primary accent (blue) */
-  --accent-strong: #030101;
-  --accent-hover: #e0e0e0;
+  /* Accent / Brand Palette */
+  --accent: #efefef;
+  --accent-hover: #c7c7c7;
 
-  /* Semantic colors */
-  --success: #8d8d8d;
-  --danger: #dc2626;
-  --warning: #f59e0b;
+  /* Semantic Colors */
+  --success: #28a745;
+  --danger: #dc3545;
+  --danger-rgb: 220, 53, 69;
+  --warning: #ffc107;
 
   /* Typography */
-  --font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-  --font-size-base: 14px;
-  --line-height-base: 1.4;
+  --font-family:
+    'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-size-base: 16px;
+  --line-height-base: 1.5;
 
-  /* Spacing scale */
+  /* Spacing & Sizing */
   --space-xs: 4px;
   --space-sm: 8px;
   --space-md: 16px;
   --space-lg: 24px;
   --space-xl: 40px;
 
-  --radius: 12px;
-  --shadow-sm: 0 1px 2px rgba(0,0,0,0.06);
-  --shadow-md: 0 4px 12px rgba(0,0,0,0.12);
-  --transition-fast: 160ms ease;
+  /* Other Design Tokens */
+  --radius: 8px;
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.2);
+  --shadow-md: 0 5px 15px rgba(0, 0, 0, 0.3);
+  --transition-fast: 200ms ease;
 }
 
-/* Light theme example: set <html data-theme="light"> to enable */
-:root[data-theme="light"] {
-  --bg: #f8fafc;
-  --surface: #ffffff;
-  --surface-2: #f1f5f9;
-  --border: rgba(27, 27, 27, 0.06);
-  --text: rgba(2,6,23,0.92);
-  --muted: rgba(20, 20, 20, 0.6);
-  --accent: #c0c0c0;
-  --accent-hover: #1e40af;
-}
-
-/* Neutral theme (warm/neutral background, not dark blue/green/gray) */
-:root[data-theme="neutral"] {
-  --bg: #f7f5f0;        /* soft warm neutral */
-  --surface: #ffffff;
-  --surface-2: #fbfaf8;
-  --border: rgba(2,6,23,0.06);
-  --text: rgba(2,6,23,0.92);
-  --muted: rgba(2,6,23,0.6);
-  --accent: #2b6cb0;    /* calm blue accent */
-  --accent-hover: #285e95;
-}
-
-html, body { height: 100%; }
+html,
 body {
-  margin:0;
+  height: 100%;
+}
+
+body {
+  margin: 0;
   font-family: var(--font-family);
   font-size: var(--font-size-base);
   line-height: var(--line-height-base);
@@ -72,59 +55,62 @@ body {
   color: var(--text);
 }
 
-/* Layout container */
-.main {
-  max-width: 980px;
-  margin: 0 auto;
-  padding: 20px 16px 48px;
+a {
+  color: var(--accent);
+  text-decoration: none;
+  transition: color var(--transition-fast);
 }
 
-/* PrimeNG card */
-.p-card {
-  background: var(--surface);
+a:hover {
+  color: var(--accent-hover);
+  text-decoration: underline;
+}
+
+/* Generic Form & Button Styles */
+.form-control {
+  display: block;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  font-family: var(--font-family);
+  color: var(--text);
+  background-color: rgba(var(--surface-rgb), 0.5);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  box-shadow: var(--shadow-sm);
+  transition:
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast);
+  box-sizing: border-box;
 }
 
-/* Prime buttons */
-.p-button {
-  border-radius: calc(var(--radius) / 1.5);
-  box-shadow: none !important;
-  transition: background var(--transition-fast), border-color var(--transition-fast);
-}
-
-.p-button:focus { box-shadow: none !important; }
-
-/* Make “success/primary” look neutral-accent */
-.p-button.p-button-success,
-.p-button.p-button-primary {
-  background: var(--accent);
+.form-control:focus {
+  outline: none;
   border-color: var(--accent);
-  color: white;
-}
-.p-button.p-button-success:hover,
-.p-button.p-button-primary:hover {
-  background: var(--accent-strong);
-  border-color: var(--accent-strong);
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
 }
 
-/* Text buttons */
-.p-button.p-button-text { color: var(--accent); }
-.p-button.p-button-text:hover { background: rgba(59, 130, 246, 0.08); }
-
-/* Slider */
-.p-slider .p-slider-range { background: var(--accent); }
-.p-slider .p-slider-handle { border-color: var(--accent); }
-
-/* Menubar */
-.p-menubar {
-  background: var(--surface);
-  border: 1px solid var(--border);
+.btn {
+  display: inline-block;
+  font-weight: 600;
+  color: var(--text);
+  text-align: center;
+  vertical-align: middle;
+  cursor: pointer;
+  user-select: none;
+  background-color: transparent;
+  border: 1px solid transparent;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
   border-radius: var(--radius);
+  transition: all var(--transition-fast);
 }
 
-/* Links (например Dubcast в меню) */
-a { color: var(--accent); }
-a:hover { color: var(--accent-hover); }
+.btn-primary {
+  color: #101010;
+  background-color: var(--accent);
+  border-color: var(--accent);
+}
 
+.btn-primary:hover {
+  filter: brightness(0.9);
+}

@@ -1,13 +1,58 @@
 import { Component } from '@angular/core';
-import { MenuItem } from 'primeng/api';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { CommonModule } from '@angular/common';
+import { RouterTestingModule } from '@angular/router/testing';
+import { BehaviorSubject } from 'rxjs';
+import { AuthState } from '../../../../core/auth/auth.service';
+
+import { PublicLayout } from './public-layout';
+import { AuthService } from '../../../../core/auth/auth.service';
+import { UserIdentityService } from '../../../../core/user/user-identity.service';
 
 @Component({
-  selector: 'app-public-layout',
-  templateUrl: './public-layout.html',
-  styleUrls: ['./public-layout.scss'],
+  selector: 'app-mini-player',
+  template: '',
+  standalone: true,
 })
-export class PublicLayout {
-  items: MenuItem[] = [
-    { label: 'Radio', icon: 'pi pi-play', routerLink: '/radio' },
-  ];
-}
+class MiniPlayerStubComponent {}
+
+describe('PublicLayout', () => {
+  let component: PublicLayout;
+  let fixture: ComponentFixture<PublicLayout>;
+
+  const authState$ = new BehaviorSubject<AuthState>({
+    token: null,
+    email: null,
+    role: null,
+    valid: false,
+  });
+
+  const authMock: Partial<AuthService> = {
+    state$: authState$.asObservable(),
+    isAuthenticated$: new BehaviorSubject(false).asObservable(),
+    logout: () => {},
+  };
+
+  const identityMock: Partial<UserIdentityService> = {
+    username$: new BehaviorSubject<string | null>(null).asObservable(),
+    hasUsername$: new BehaviorSubject<boolean>(false).asObservable(),
+  };
+
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [PublicLayout, MiniPlayerStubComponent, CommonModule, RouterTestingModule],
+      providers: [
+        { provide: AuthService, useValue: authMock },
+        { provide: UserIdentityService, useValue: identityMock },
+      ],
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(PublicLayout);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
+
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
+});

@@ -1,10 +1,16 @@
-.wrapper {
+.sc-wrap {
   margin-top: 12px;
   border-radius: 12px;
   overflow: hidden;
   border: 1px solid rgba(0, 0, 0, 0.12);
 }
 
-.hidden {
-  display: none;
+.sc-wrap.sc-hidden {
+  position: fixed;
+  left: -10000px;
+  top: 0;
+  width: 480px;
+  height: 450px;
+  opacity: 0;
+  pointer-events: none;
 }

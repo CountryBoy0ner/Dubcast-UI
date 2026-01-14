@@ -1,16 +1,55 @@
-<p-toast></p-toast>
+<header class="header">
+  <div class="header__inner">
+    <a routerLink="/radio" class="logo">Dubcast</a>
+    <app-mini-player class="header__mini-player"></app-mini-player>
 
-<p-menubar [model]="items">
-    <ng-template pTemplate="start">
-        <a class="brand" routerLink="/radio">Dubcast</a>
-    </ng-template>
+    <nav class="nav">
+      <div class="live-stats" *ngIf="onlineCount$ | async as count" title="On air">
+        <div class="live-indicator">
+          <span class="pulsing-dot"></span>
+        </div>
+        <i class="pi pi-users"></i>
+        <span class="count">{{ count }}</span>
+      </div>
 
-    <ng-template pTemplate="end">
-        <a pButton class="p-button-text" routerLink="/login">Login</a>
-        <a pButton class="p-button-text" routerLink="/register">Register</a>
-    </ng-template>
-</p-menubar>
+      <a
+        routerLink="/radio"
+        class="nav__link"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }"
+        >Radio</a
+      >
 
-<div class="page">
-    <router-outlet></router-outlet>
-</div>
+      <!-- Guest -->
+      <ng-container *ngIf="!(isAuth$ | async); else authed">
+        <a routerLink="/login" class="nav__link" routerLinkActive="active">Login</a>
+        <a routerLink="/register" class="nav__link" routerLinkActive="active">Register</a>
+      </ng-container>
+
+      <!-- Authenticated -->
+      <ng-template #authed>
+        <span class="nav__user" title="Logged in as {{ displayName$ | async }}">
+          {{ displayName$ | async }}
+          <small
+            *ngIf="(isAuth$ | async) && !(hasUsername$ | async)"
+            class="no-username"
+            title="You don't have a username set. Set it in your Profile."
+          >
+            (no username)
+          </small>
+        </span>
+
+        <a routerLink="/profile" class="nav__link" routerLinkActive="active">Profile</a>
+        <button type="button" class="nav__link nav__btn" (click)="logout()">Logout</button>
+      </ng-template>
+    </nav>
+  </div>
+</header>
+
+<main class="main">
+  <router-outlet></router-outlet>
+</main>
+
+<footer class="footer">
+  <div class="footer__inner">&copy; 2026 Dubcast. All rights reserved.</div>
+</footer>

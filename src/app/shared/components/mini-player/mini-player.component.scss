@@ -1,0 +1,70 @@
+:host {
+  display: block;
+}
+.buttonХ {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+.mini-player {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius);
+}
+
+.mini-btn {
+  width: 38px;
+  height: 38px;
+}
+
+.vol-ico {
+  color: var(--muted);
+}
+
+.mini-slider {
+  width: 120px;
+}
+
+.vol-value {
+  min-width: 3ch;
+  text-align: right;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+:host ::ng-deep {
+  .p-slider.mini-slider {
+    background: rgba(255, 255, 255, 0.25);
+  }
+
+  .p-slider.mini-slider .p-slider-range {
+    background: var(--accent);
+  }
+
+  .p-slider.mini-slider .p-slider-handle {
+    background: var(--accent);
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.35);
+    transition: filter var(--transition-fast);
+  }
+
+  .p-slider.mini-slider:not(.p-disabled) .p-slider-handle:hover {
+    filter: brightness(0.9);
+  }
+}
+:host ::ng-deep {
+  .mini-btn.p-button {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #161616;
+    transition: filter var(--transition-fast);
+  }
+
+  .mini-btn.p-button:hover {
+    background: #9e9e9e !important;
+    border-color: #9e9e9e !important;
+    color: #fff !important;
+    filter: brightness(0.9);
+  }
+}

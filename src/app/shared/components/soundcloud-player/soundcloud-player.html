@@ -1,4 +1,4 @@
-<div class="sc-wrap" [style.display]="visible ? 'block' : 'none'">
+<div class="sc-wrap" [class.sc-hidden]="!visible">
   <iframe
     #iframe
     width="100%"
@@ -6,6 +6,7 @@
     frameborder="0"
     scrolling="no"
     allow="autoplay; encrypted-media"
-    [src]="safeSrc">
+    [src]="safeSrc"
+  >
   </iframe>
 </div>

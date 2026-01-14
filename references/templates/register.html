@@ -25,13 +25,9 @@
 
     <button type="submit">Sign up</button>
 
-
-
-    <!-- ошибки валидации -->
     <div th:if="${#fields.hasErrors('email')}"
          th:errors="*{email}"></div>
 
-    <!-- сообщение из EmailAlreadyUsedException -->
     <div th:if="${emailError}"
          th:text="${emailError}"></div>
 

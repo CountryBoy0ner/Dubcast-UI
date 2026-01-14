@@ -1,1 +1,63 @@
-<p>register-page works!</p>
+<div class="auth-page">
+  <div class="auth-card">
+    <h2 class="auth-title">Register</h2>
+
+    <form class="auth-form" [formGroup]="form" (ngSubmit)="submit()">
+      <label class="auth-label">Email</label>
+      <input
+        class="auth-input"
+        type="email"
+        formControlName="email"
+        placeholder="example@mail.com"
+      />
+      <div
+        class="auth-field-error"
+        *ngIf="form.get('email')?.touched && form.get('email')?.invalid"
+      >
+        Enter a valid email
+      </div>
+
+      <label class="auth-label">Password</label>
+      <input
+        class="auth-input"
+        type="password"
+        formControlName="password"
+        placeholder="Minimum 6 characters"
+      />
+      <div
+        class="auth-field-error"
+        *ngIf="form.get('password')?.touched && form.get('password')?.invalid"
+      >
+        Password must be at least 6 characters
+      </div>
+
+      <label class="auth-label">Confirm password</label>
+      <input
+        class="auth-input"
+        type="password"
+        formControlName="confirmPassword"
+        placeholder="Repeat password"
+      />
+      <div
+        class="auth-field-error"
+        *ngIf="
+          form.get('confirmPassword')?.touched &&
+          form.get('confirmPassword')?.value !== form.get('password')?.value
+        "
+      >
+        Passwords do not match
+      </div>
+
+      <div class="auth-error" *ngIf="error">{{ error }}</div>
+
+      <button class="auth-btn" type="submit" [disabled]="loading">
+        {{ loading ? 'Creating account…' : 'Register' }}
+      </button>
+
+      <p class="auth-hint">
+        Already have an account?
+        <a routerLink="/login"> Login</a>
+      </p>
+    </form>
+  </div>
+</div>
