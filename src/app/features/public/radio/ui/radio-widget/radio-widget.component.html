@@ -28,6 +28,11 @@
             <div class="info">
               <div class="track">{{ now.title || 'Unknown Track' }}</div>
               <div class="meta">Playlist: {{ now.playlistTitle || 'None' }}</div>
+              <div class="likes">
+                <i class="pi pi-heart"></i>
+                <span>{{ now.likesCount ?? 0 }}</span>
+              </div>
+
             </div>
           </div>
         </ng-container>

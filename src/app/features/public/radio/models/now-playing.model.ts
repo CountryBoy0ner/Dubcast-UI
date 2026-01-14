@@ -7,4 +7,5 @@ export interface NowPlayingResponse {
   trackUrl?: string;
   trackId?: number | null;
   playlistTitle?: string | null;
+  likesCount?: number; // NEW
 }
