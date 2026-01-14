@@ -9,10 +9,7 @@ describe('RadioWidgetComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [RadioWidgetComponent],
-      imports: [HttpClientTestingModule],
-      // NO_ERRORS_SCHEMA позволяет игнорировать неизвестные теги (например, p-slider),
-      // чтобы не импортировать все модули PrimeNG в тест
+      imports: [RadioWidgetComponent, HttpClientTestingModule],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
   });

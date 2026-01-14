@@ -1,4 +1,4 @@
-import { Injectable, NgZone, OnDestroy } from '@angular/core';
+import { Injectable, NgZone, OnDestroy, inject } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { combineLatest, filter, map, startWith, distinctUntilChanged, Subscription } from 'rxjs';
 
@@ -9,6 +9,12 @@ import { AnalyticsHeartbeatMessage } from '../models/analytics-heartbeat.model';
 
 @Injectable({ providedIn: 'root' })
 export class AnalyticsPresenceService implements OnDestroy {
+  private ws = inject(AnalyticsWsService);
+  private player = inject(PlayerService);
+  private radio = inject(RadioStoreService);
+  private router = inject(Router);
+  private zone = inject(NgZone);
+
   private started = false;
 
   private timerId: number | null = null;
@@ -20,16 +26,9 @@ export class AnalyticsPresenceService implements OnDestroy {
 
   private lastMsg: AnalyticsHeartbeatMessage = { page: '/', listening: false, trackId: null };
 
-  // Backend TTL is 15s — send more often (5s)
   private readonly HEARTBEAT_INTERVAL_MS = 5000;
 
-  constructor(
-    private ws: AnalyticsWsService,
-    private player: PlayerService,
-    private radio: RadioStoreService,
-    private router: Router,
-    private zone: NgZone,
-  ) {}
+  // No constructor needed — using `inject()` for DI
 
   init(): void {
     if (this.started) return;
@@ -44,7 +43,6 @@ export class AnalyticsPresenceService implements OnDestroy {
       distinctUntilChanged(),
     );
 
-    // effective listening: кнопка play + реально playing от бэка
     const listening$ = combineLatest([this.player.isPlaying$, this.radio.now$]).pipe(
       map(([uiPlaying, now]) => !!uiPlaying && !!now?.playing),
       distinctUntilChanged(),
@@ -61,16 +59,13 @@ export class AnalyticsPresenceService implements OnDestroy {
       presence$.subscribe(([page, listening, trackId]) => {
         const msg: AnalyticsHeartbeatMessage = { page, listening, trackId };
 
-        // if listening=false — stop loop and send OFF once
         if (!listening) {
           this.stopLoop();
-          this.sendOnce(msg); // listening=false
+          this.sendOnce(msg);
           this.lastMsg = msg;
           return;
         }
 
-        // listening=true
-        // if page/trackId changed — send immediately and (re)start loop
         const changed =
           this.lastMsg.page !== msg.page ||
           this.lastMsg.trackId !== msg.trackId ||
@@ -79,18 +74,16 @@ export class AnalyticsPresenceService implements OnDestroy {
         this.lastMsg = msg;
 
         if (changed) this.sendOnce(msg);
-        this.startLoop(); // will send this.lastMsg at HEARTBEAT_INTERVAL_MS
+        this.startLoop();
       }),
     );
 
-    // send OFF on tab/window close
     window.addEventListener('beforeunload', this.beforeUnloadHandler);
   }
 
   private startLoop(): void {
     if (this.timerId) return;
 
-    // setInterval вне Angular зоны, чтобы не триггерить лишний change detection
     this.zone.runOutsideAngular(() => {
       this.timerId = window.setInterval(() => {
         this.ws.sendHeartbeat(this.lastMsg);
@@ -108,7 +101,6 @@ export class AnalyticsPresenceService implements OnDestroy {
     this.ws.sendHeartbeat(msg);
   }
 
-  /** Clean up subscriptions and listeners */
   ngOnDestroy(): void {
     this.stopLoop();
     this.subscription.unsubscribe();

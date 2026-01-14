@@ -1,10 +1,12 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { BehaviorSubject, Observable, finalize, switchMap, tap, catchError, of, map } from 'rxjs';
 import { ProfileApiService } from '../data-access/profile-api.service';
 import { UserProfileResponse } from '../models/profile.model';
 
 @Injectable({ providedIn: 'root' })
 export class ProfileStoreService {
+  private api = inject(ProfileApiService);
+
   private profileSubject = new BehaviorSubject<UserProfileResponse | null>(null);
   private loadingSubject = new BehaviorSubject<boolean>(false);
   private savingSubject = new BehaviorSubject<boolean>(false);
@@ -15,7 +17,7 @@ export class ProfileStoreService {
   saving$ = this.savingSubject.asObservable();
   error$ = this.errorSubject.asObservable();
 
-  constructor(private api: ProfileApiService) {}
+  // No constructor needed — using `inject()` for DI
 
   load(): Observable<UserProfileResponse | null> {
     this.loadingSubject.next(true);
@@ -39,7 +41,7 @@ export class ProfileStoreService {
     return this.api.updateUsername(username).pipe(
       switchMap(() => this.api.me()),
       tap((p) => this.profileSubject.next(p)),
-      map(() => void 0), // ✅ ВОТ ЭТО УБИРАЕТ ТВОЮ ОШИБКУ
+      map(() => void 0),
       catchError((_e) => {
         this.errorSubject.next(_e?.error?.message || 'Failed to update username');
         return of(void 0);
@@ -55,7 +57,7 @@ export class ProfileStoreService {
     return this.api.updateBio(bio).pipe(
       switchMap(() => this.api.me()),
       tap((p) => this.profileSubject.next(p)),
-      map(() => void 0), // ✅ И ТУТ
+      map(() => void 0),
       catchError((_e) => {
         this.errorSubject.next(_e?.error?.message || 'Failed to update bio');
         return of(void 0);

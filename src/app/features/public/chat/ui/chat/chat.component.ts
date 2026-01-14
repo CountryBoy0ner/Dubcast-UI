@@ -1,4 +1,7 @@
-import { Component, OnInit, ViewChild, ElementRef, OnDestroy } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, OnDestroy, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { ChatMessageComponent } from '../chat-message/chat-message.component';
 import { ChatStoreService } from '../../state/chat-store.service';
 import { Observable, Subscription } from 'rxjs';
 import { ChatMessageDto } from '../../models/chat.model';
@@ -7,9 +10,13 @@ import { AuthService } from '../../../../../core/auth/auth.service';
   selector: 'app-chat',
   templateUrl: './chat.component.html',
   styleUrls: ['./chat.component.scss'],
-  standalone: false,
+  standalone: true,
+  imports: [CommonModule, FormsModule, ChatMessageComponent],
 })
 export class ChatComponent implements OnInit, OnDestroy {
+  store = inject(ChatStoreService);
+  private auth = inject(AuthService);
+
   messages$!: Observable<ChatMessageDto[]>;
   loading$!: Observable<boolean>;
   input = '';
@@ -25,10 +32,7 @@ export class ChatComponent implements OnInit, OnDestroy {
   noMorePages = false;
   pageSize = 20;
 
-  constructor(
-    public store: ChatStoreService,
-    private auth: AuthService,
-  ) {}
+  // No constructor needed — using `inject()` for DI
 
   ngOnInit(): void {
     this.isAuthenticated$ = this.auth.isAuthenticated$;
@@ -115,7 +119,7 @@ export class ChatComponent implements OnInit, OnDestroy {
     this.loadingPage = true;
     const nextPage = this.store.getCurrentPage() + 1;
     this.store.loadPage(nextPage).subscribe({
-      next: (list) => {
+      next: (_list) => {
         setTimeout(() => {
           const newScrollHeight = el.scrollHeight;
           // keep viewport on same message

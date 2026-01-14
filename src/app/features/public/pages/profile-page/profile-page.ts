@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
-import { FormBuilder, Validators, FormGroup } from '@angular/forms';
+import { Component, OnInit, inject } from '@angular/core';
+import { FormBuilder, Validators, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
 import { Observable } from 'rxjs';
 import { AuthService } from '../../../../core/auth/auth.service';
 import { ProfileStoreService } from '../../profile/state/profile-store.service';
@@ -9,38 +10,37 @@ import { UserProfileResponse } from '../../profile/models/profile.model';
   selector: 'app-profile-page',
   templateUrl: './profile-page.html',
   styleUrls: ['./profile-page.scss'],
-  standalone: false,
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule],
 })
 export class ProfilePage implements OnInit {
+  private fb = inject(FormBuilder);
+  private auth = inject(AuthService);
+  store = inject(ProfileStoreService);
+
   profile$!: Observable<UserProfileResponse | null>;
   loading$!: Observable<boolean>;
   saving$!: Observable<boolean>;
   error$!: Observable<string | null>;
   isAuth$!: Observable<boolean>;
 
-  form: FormGroup;
+  
   private patchedOnce = false;
   private currentUsername = '';
   private currentBio = '';
 
-  constructor(
-    private fb: FormBuilder,
-    private auth: AuthService,
-    public store: ProfileStoreService,
-  ) {
-    this.form = this.fb.group({
-      username: [
-        '',
-        [
-          Validators.required,
-          Validators.minLength(3),
-          Validators.maxLength(50),
-          Validators.pattern(/^[A-Za-z0-9_.]+$/),
-        ],
+  form: FormGroup = this.fb.group({
+    username: [
+      '',
+      [
+        Validators.required,
+        Validators.minLength(3),
+        Validators.maxLength(50),
+        Validators.pattern(/^[A-Za-z0-9_.]+$/),
       ],
-      bio: ['', [Validators.maxLength(512)]],
-    });
-  }
+    ],
+    bio: ['', [Validators.maxLength(512)]],
+  });
 
   ngOnInit(): void {
     this.profile$ = this.store.profile$;
@@ -50,24 +50,20 @@ export class ProfilePage implements OnInit {
     this.isAuth$ = this.auth.isAuthenticated$;
     this.profile$.subscribe((p) => {
       this.currentUsername = (p?.username ?? '').trim();
-      this.currentBio = (p?.bio ?? '').trim(); // ✅ вот этого не хватало
+      this.currentBio = (p?.bio ?? '').trim();
     });
 
-    // грузим профиль
     this.store.load().subscribe({
       next: (p) => this.patchFormIfNeeded(p),
       error: () => {},
     });
 
-    // если store обновился (после save), обновим форму, но аккуратно
     this.profile$.subscribe((p) => this.patchFormIfNeeded(p));
   }
 
   private patchFormIfNeeded(p: UserProfileResponse | null): void {
     if (!p) return;
 
-    // чтобы не перетирать ввод пользователя — патчим только 1 раз,
-    // и дальше только когда форма "чистая"
     if (!this.patchedOnce || !this.form.dirty) {
       this.form.patchValue(
         {

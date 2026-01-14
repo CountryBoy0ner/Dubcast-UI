@@ -1,15 +1,11 @@
-// d:\Diplom\Dubcast\dubcast-ui\src\app\core\audio\player.service.ts
-
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class PlayerService {
-  // Состояние громкости (инициализируем из localStorage)
   private volumeSubject = new BehaviorSubject<number>(this.getSavedVolume());
-  volume$ = this.volumeSubject.asObservable(); //используется в global player
+  volume$ = this.volumeSubject.asObservable();
 
-  // Состояние "включено/выключено"
   private isPlayingSubject = new BehaviorSubject<boolean>(false);
   isPlaying$ = this.isPlayingSubject.asObservable();
 

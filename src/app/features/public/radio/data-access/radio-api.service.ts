@@ -1,11 +1,13 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { map, Observable } from 'rxjs';
 import { NowPlayingResponse } from '../models/now-playing.model';
 
 @Injectable({ providedIn: 'root' })
 export class RadioApiService {
-  constructor(private http: HttpClient) {}
+  private http = inject(HttpClient);
+
+  // No constructor needed — using `inject()` for DI
 
   getNowPlaying(): Observable<NowPlayingResponse | null> {
     return this.http

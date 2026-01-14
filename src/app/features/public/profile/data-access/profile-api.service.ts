@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import {
@@ -9,7 +9,9 @@ import {
 
 @Injectable({ providedIn: 'root' })
 export class ProfileApiService {
-  constructor(private http: HttpClient) {}
+  private http = inject(HttpClient);
+
+  // No constructor needed — using `inject()` for DI
 
   me(): Observable<UserProfileResponse> {
     return this.http.get<UserProfileResponse>('/api/profile/me');
@@ -17,7 +19,6 @@ export class ProfileApiService {
 
   updateUsername(username: string): Observable<void> {
     const body: UpdateUsernameRequest = { username };
-    // бэк отвечает 204, поэтому void
     return this.http.put<void>('/api/profile/username', body);
   }
 

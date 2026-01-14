@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { BehaviorSubject, finalize } from 'rxjs';
 import { RadioApiService } from '../data-access/radio-api.service';
 import { NowPlayingResponse } from '../models/now-playing.model';
@@ -6,6 +6,9 @@ import { RadioWsService } from '../data-access/radio-ws.service';
 
 @Injectable({ providedIn: 'root' })
 export class RadioStoreService {
+  private api = inject(RadioApiService);
+  private ws = inject(RadioWsService);
+
   private loadingSubject = new BehaviorSubject<boolean>(false);
   private errorSubject = new BehaviorSubject<string | null>(null);
   private nowSubject = new BehaviorSubject<NowPlayingResponse | null>(null);
@@ -14,10 +17,7 @@ export class RadioStoreService {
   error$ = this.errorSubject.asObservable();
   now$ = this.nowSubject.asObservable();
 
-  constructor(
-    private api: RadioApiService,
-    private ws: RadioWsService,
-  ) {}
+  // No constructor needed — using `inject()` for DI
 
   loadNowPlaying(): void {
     this.loadingSubject.next(true);

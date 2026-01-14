@@ -1,4 +1,4 @@
-import { Injectable, NgZone } from '@angular/core';
+import { Injectable, NgZone, inject } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { Client, IMessage } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
@@ -8,6 +8,8 @@ import { AnalyticsHeartbeatMessage } from '../models/analytics-heartbeat.model';
 
 @Injectable({ providedIn: 'root' })
 export class AnalyticsWsService {
+  private zone = inject(NgZone);
+
   private client?: Client;
   private connected = false;
 
@@ -16,7 +18,7 @@ export class AnalyticsWsService {
 
   private pendingHeartbeat: AnalyticsHeartbeatMessage | null = null;
 
-  constructor(private zone: NgZone) {}
+  // No constructor needed — using `inject()` for DI
 
   start(): void {
     if (this.client?.active) return;
@@ -36,7 +38,6 @@ export class AnalyticsWsService {
           }
         });
 
-        // если пока не было соединения — дошлём последний heartbeat
         if (this.pendingHeartbeat) {
           const msg = this.pendingHeartbeat;
           this.pendingHeartbeat = null;
@@ -52,7 +53,6 @@ export class AnalyticsWsService {
   }
 
   sendHeartbeat(msg: AnalyticsHeartbeatMessage): void {
-    // если нет коннекта — запомним последний heartbeat
     if (!this.client || !this.client.connected) {
       this.pendingHeartbeat = msg;
       return;

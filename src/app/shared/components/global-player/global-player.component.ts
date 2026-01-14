@@ -1,6 +1,7 @@
 // d:\Diplom\Dubcast\dubcast-ui\src\app\shared\components\global-player\global-player.component.ts
 
-import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
+import { Component, OnInit, ViewChild, OnDestroy, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { Subscription } from 'rxjs';
 import { RadioStoreService } from '../../../features/public/radio/state/radio-store.service';
 import { PlayerService } from '../../../core/audio/player.service';
@@ -14,9 +15,14 @@ import { BackgroundService } from '../../../core/background/background.service';
   selector: 'app-global-player',
   templateUrl: './global-player.component.html',
   styleUrls: ['./global-player.component.scss'],
-  standalone: false,
+  standalone: true,
+  imports: [CommonModule, SoundcloudPlayerComponent],
 })
 export class GlobalPlayerComponent implements OnInit, AfterViewInit, OnDestroy {
+  private store = inject(RadioStoreService);
+  private playerService = inject(PlayerService);
+  private bg = inject(BackgroundService);
+
   @ViewChild('player') player?: SoundcloudPlayerComponent;
 
   volume = 70;
@@ -27,30 +33,22 @@ export class GlobalPlayerComponent implements OnInit, AfterViewInit, OnDestroy {
   private lastKey: string | null = null;
   private playLock = false;
 
-  constructor(
-    private store: RadioStoreService,
-    private playerService: PlayerService,
-    private bg: BackgroundService,
-  ) {}
+  // No constructor needed — using `inject()` for DI
 
   ngOnInit(): void {
-    // Подключаемся к сокетам и загружаем данные (теперь это делает глобальный плеер)
     this.store.connectLiveNowPlaying();
     this.store.loadNowPlaying();
 
-    // Слушаем громкость
     this.sub.add(
       this.playerService.volume$.subscribe((v) => {
         this.volume = v;
       }),
     );
 
-    // Слушаем команду Play/Pause
     this.sub.add(
       this.playerService.isPlaying$.subscribe((playing) => {
         this.isPlaying = playing;
         if (playing) {
-          // При включении проверяем, нужно ли загрузить трек или просто продолжить
           this.syncPlayerState();
         } else {
           if (this.player) this.player.pause();
@@ -58,12 +56,10 @@ export class GlobalPlayerComponent implements OnInit, AfterViewInit, OnDestroy {
       }),
     );
 
-    // Слушаем треки
     this.sub.add(
       this.store.now$.subscribe((now) => {
         this.latestNow = now;
 
-        // ✅ фон всегда обновляется независимо от страницы
         this.bg.set(now?.artworkUrl ?? null);
 
         if (this.isPlaying) {
@@ -87,13 +83,11 @@ export class GlobalPlayerComponent implements OnInit, AfterViewInit, OnDestroy {
 
     const key = `${now.trackUrl}|${now.startedAt ?? ''}`;
 
-    // Если трек уже загружен (ключ совпадает), просто играем
     if (this.lastKey === key) {
       if (this.player) this.player.play();
       return;
     }
 
-    // Если трек новый или еще не загружен
     this.lastKey = key;
     this.playFromNow(now);
   }

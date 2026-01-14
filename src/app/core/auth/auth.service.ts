@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { BehaviorSubject, Observable, of, switchMap, tap, catchError, map, throwError } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { UserIdentityService } from '../user/user-identity.service';
@@ -20,6 +20,9 @@ export interface AuthState {
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
+  private http = inject(HttpClient);
+  private identity = inject(UserIdentityService);
+
   private tokenKey = 'dubcast_token';
 
   private stateSubject = new BehaviorSubject<AuthState>({
@@ -31,23 +34,21 @@ export class AuthService {
 
   state$ = this.stateSubject.asObservable();
   isAuthenticated$ = this.state$.pipe(map((s) => s.valid));
-  currentUser$ = this.state$.pipe(map((s) => s.email)); // Используем email как никнейм или добавь username в AuthState
+  currentUser$ = this.state$.pipe(map((s) => s.email));
 
-  constructor(
-    private http: HttpClient,
-    private identity: UserIdentityService,
-  ) {
+  // No constructor needed — using `inject()` for DI
+  constructor() {
     const token = this.getToken();
     if (token) {
       this.setState({ token, email: null, role: null, valid: true });
-      this.validateToken().subscribe(); // validate далее сам вызовет identity.refresh (см ниже)
+      this.validateToken().subscribe();
     }
   }
 
   login(emailOrUsername: string, password: string): Observable<void> {
     return this.http
       .post<AuthResponse>('/api/auth/login', {
-        email: emailOrUsername, // <-- ВАЖНО: как в Postman
+        email: emailOrUsername,
         password,
       })
       .pipe(
@@ -86,7 +87,7 @@ export class AuthService {
         switchMap(() => this.validateToken()),
         map((isValid) => {
           if (!isValid) {
-            throw new Error('Не удалось подтвердить сессию');
+            throw new Error('Could not confirm session');
           }
         }),
         catchError((err) => {
@@ -97,7 +98,6 @@ export class AuthService {
   }
 
   logout(): void {
-    // Perform logout cleanup
     localStorage.removeItem(this.tokenKey);
 
     this.identity.clear();
@@ -105,7 +105,6 @@ export class AuthService {
     this.setState({ token: null, email: null, role: null, valid: false });
   }
 
-  /** ВАЖНО: это “истина” для чата и всего UI */
   isAuthenticatedNow(): boolean {
     return this.stateSubject.value.valid;
   }
@@ -118,7 +117,6 @@ export class AuthService {
     return localStorage.getItem(this.tokenKey);
   }
 
-  /** дергает /api/auth/validate из твоего бэка */
   validateToken(): Observable<boolean> {
     const token = this.getToken();
     if (!token) {
@@ -139,7 +137,6 @@ export class AuthService {
 
       map((r) => r.valid),
       catchError(() => {
-        // если validate упал — считаем что не залогинен
         this.logout();
         return of(false);
       }),

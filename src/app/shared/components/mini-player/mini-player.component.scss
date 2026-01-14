@@ -34,21 +34,18 @@
 }
 
 :host ::ng-deep {
-  /* серый трек */
   .p-slider.mini-slider {
     background: rgba(255, 255, 255, 0.25);
   }
 
-  /* заполненная часть */
   .p-slider.mini-slider .p-slider-range {
     background: var(--accent);
   }
 
-  /* кружок */
   .p-slider.mini-slider .p-slider-handle {
-    background: var(--accent); /* было var(--bg) */
+    background: var(--accent);
     border-color: var(--accent);
-    box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.35); /* чтобы видно на любом фоне */
+    box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.35);
     transition: filter var(--transition-fast);
   }
 
@@ -58,9 +55,9 @@
 }
 :host ::ng-deep {
   .mini-btn.p-button {
-    background: var(--accent); /* основной цвет */
+    background: var(--accent);
     border-color: var(--accent);
-    color: #161616; /* цвет иконки/текста */
+    color: #161616;
     transition: filter var(--transition-fast);
   }
 }

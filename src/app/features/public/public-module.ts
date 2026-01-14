@@ -11,7 +11,6 @@ import { ChatModule } from './chat/chat.module';
 import { RadioWidgetModule } from './radio/radio-widget.module';
 
 @NgModule({
-  declarations: [PublicLayout, RadioPage, LoginPage, RegisterPage, ProfilePage],
-  imports: [SharedModule, PublicRoutingModule, ChatModule, RadioWidgetModule],
+  imports: [SharedModule, PublicRoutingModule, ChatModule, RadioWidgetModule, PublicLayout, RadioPage, LoginPage, RegisterPage, ProfilePage],
 })
 export class PublicModule {}

@@ -1,4 +1,6 @@
-import { Component, Input, ViewChild, OnDestroy } from '@angular/core';
+import { Component, Input, ViewChild, OnDestroy, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { PopoverModule } from 'primeng/popover';
 import { Subscription, timer } from 'rxjs';
 import { ChatMessageDto } from '../../models/chat.model';
 import { PublicProfileCacheService } from '../../../../../core/user/public-profile-cache.service';
@@ -8,9 +10,12 @@ import { PublicProfileResponse } from '../../../../../core/user/public-profile-a
   selector: 'app-chat-message',
   templateUrl: './chat-message.component.html',
   styleUrls: ['./chat-message.component.scss'],
-  standalone: false,
+  standalone: true,
+  imports: [CommonModule, PopoverModule],
 })
 export class ChatMessageComponent implements OnDestroy {
+  private profiles = inject(PublicProfileCacheService);
+
   @Input() message!: ChatMessageDto;
   @ViewChild('pop') pop!: HTMLElement | null;
 
@@ -19,7 +24,7 @@ export class ChatMessageComponent implements OnDestroy {
   private hideSub?: Subscription;
   private loadSub?: Subscription;
 
-  constructor(private profiles: PublicProfileCacheService) {}
+  // No constructor needed — using `inject()` for DI
 
   ngOnDestroy(): void {
     this.hideSub?.unsubscribe();
@@ -42,12 +47,11 @@ export class ChatMessageComponent implements OnDestroy {
     this.loadSub = this.profiles.get(username).subscribe({
       next: (p) => {
         this.profile = p;
-        // ✅ показываем ТОЛЬКО когда данные есть
-        const popEl: any = this.pop;
+        type PopEl = HTMLElement & { show?: (ev?: MouseEvent) => void };
+        const popEl = this.pop as PopEl | null;
         if (popEl && typeof popEl.show === 'function') popEl.show(ev);
       },
       error: () => {
-        // ❗ если профиля нет — просто ничего не показываем (как ты просил)
         this.profile = null;
       },
     });
@@ -56,7 +60,8 @@ export class ChatMessageComponent implements OnDestroy {
   onUserLeave(): void {
     this.hideSub?.unsubscribe();
     this.hideSub = timer(150).subscribe(() => {
-      const popEl: any = this.pop;
+      type PopEl = HTMLElement & { hide?: () => void };
+      const popEl = this.pop as PopEl | null;
       if (popEl && typeof popEl.hide === 'function') popEl.hide();
     });
   }
@@ -66,7 +71,7 @@ export class ChatMessageComponent implements OnDestroy {
     for (let i = 0; i < str.length; i++) {
       hash = str.charCodeAt(i) + ((hash << 5) - hash);
     }
-    // Пастельные/светлые цвета для темной темы (HSL)
+    
     const h = Math.abs(hash) % 360;
     return `hsl(${h}, 70%, 70%)`;
   }

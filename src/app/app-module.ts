@@ -15,7 +15,7 @@ import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AuthInterceptor } from './core/auth/auth.interceptor';
 import { GlobalPlayerComponent } from './shared/components/global-player/global-player.component';
 @NgModule({
-  declarations: [App, GlobalPlayerComponent],
+  declarations: [App ],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
@@ -25,6 +25,7 @@ import { GlobalPlayerComponent } from './shared/components/global-player/global-
     SharedModule,
 
     AppRoutingModule,
+    GlobalPlayerComponent
   ],
   providers: [
     provideBrowserGlobalErrorListeners(),

@@ -1,7 +1,7 @@
 :host {
   display: flex;
   flex-direction: column;
-  flex: 1; // Grow to fill the .main-content wrapper
+  flex: 1;
 }
 
 .header {
@@ -88,7 +88,6 @@
   gap: 8px;
   padding: 6px 12px;
 
-  // Glassmorphism эффект
   background: rgba(255, 255, 255, 0.08);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 20px;
@@ -118,7 +117,7 @@
 .pulsing-dot {
   width: 8px;
   height: 8px;
-  background-color: #22c55e; // Зеленый цвет для онлайна
+  background-color: #22c55e;
   border-radius: 50%;
   position: relative;
 

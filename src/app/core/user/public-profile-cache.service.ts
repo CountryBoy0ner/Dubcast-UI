@@ -1,13 +1,15 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
 import { catchError, shareReplay } from 'rxjs/operators';
 import { PublicProfileApiService, PublicProfileResponse } from './public-profile-api.service';
 
 @Injectable({ providedIn: 'root' })
 export class PublicProfileCacheService {
+  private api = inject(PublicProfileApiService);
+
   private cache = new Map<string, Observable<PublicProfileResponse>>();
 
-  constructor(private api: PublicProfileApiService) {}
+  // No constructor needed — using `inject()` for DI
 
   get(username: string): Observable<PublicProfileResponse> {
     const key = username.trim();

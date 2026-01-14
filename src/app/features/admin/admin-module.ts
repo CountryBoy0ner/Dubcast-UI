@@ -6,7 +6,6 @@ import { AdminLayout } from './layout/admin-layout/admin-layout';
 import { AdminDashboardPage } from './pages/admin-dashboard-page/admin-dashboard-page';
 
 @NgModule({
-  declarations: [AdminLayout, AdminDashboardPage],
-  imports: [SharedModule, AdminRoutingModule],
+  imports: [SharedModule, AdminRoutingModule, AdminLayout, AdminDashboardPage],
 })
 export class AdminModule {}

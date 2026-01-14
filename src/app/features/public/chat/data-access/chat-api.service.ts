@@ -1,11 +1,13 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { ChatMessageDto } from '../models/chat.model';
 
 @Injectable({ providedIn: 'root' })
 export class ChatApiService {
-  constructor(private http: HttpClient) {}
+  private http = inject(HttpClient);
+
+  // No constructor needed — using `inject()` for DI
 
   getLastMessages(limit = 50): Observable<ChatMessageDto[]> {
     return this.http.get<ChatMessageDto[]>(`/api/chat/messages?limit=${limit}`);

@@ -5,8 +5,7 @@ import { SharedModule } from '../../../shared/shared.module';
 import { RadioWidgetComponent } from './ui/radio-widget/radio-widget.component';
 
 @NgModule({
-  declarations: [RadioWidgetComponent],
-  imports: [SharedModule, ChatModule],
+  imports: [SharedModule, ChatModule, RadioWidgetComponent],
   exports: [RadioWidgetComponent],
 })
 export class RadioWidgetModule {}

@@ -1,30 +1,27 @@
-import { ChangeDetectorRef, Component } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ChangeDetectorRef, Component, inject } from '@angular/core';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
 import { AuthService } from '../../../../core/auth/auth.service';
 @Component({
   selector: 'app-login-page',
   templateUrl: './login-page.html',
-  standalone: false,
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule],
   styleUrls: ['./login-page.scss'],
 })
 export class LoginPage {
+  private fb = inject(FormBuilder);
+  private auth = inject(AuthService);
+  private router = inject(Router);
+  private cdr = inject(ChangeDetectorRef);
+
   loading = false;
   error = '';
-  form: FormGroup;
-
-  constructor(
-    private fb: FormBuilder,
-    private auth: AuthService,
-    private router: Router,
-    private cdr: ChangeDetectorRef,
-  ) {
-    // Basic login form with validation
-    this.form = this.fb.group({
-      emailOrUsername: ['', [Validators.required]],
-      password: ['', [Validators.required, Validators.minLength(3)]],
-    });
-  }
+  form: FormGroup = this.fb.group({
+    emailOrUsername: ['', [Validators.required]],
+    password: ['', [Validators.required, Validators.minLength(3)]],
+  });
 
   submit(): void {
     // Clear previous error

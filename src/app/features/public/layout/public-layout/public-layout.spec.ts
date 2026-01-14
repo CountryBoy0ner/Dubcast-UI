@@ -3,16 +3,16 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { CommonModule } from '@angular/common';
 import { RouterTestingModule } from '@angular/router/testing';
 import { BehaviorSubject } from 'rxjs';
+import { AuthState } from '../../../../core/auth/auth.service';
 
 import { PublicLayout } from './public-layout';
 import { AuthService } from '../../../../core/auth/auth.service';
 import { UserIdentityService } from '../../../../core/user/user-identity.service';
 
-// ✅ Заглушка, чтобы шаблон <app-mini-player> не ломал тест
 @Component({
   selector: 'app-mini-player',
   template: '',
-  standalone: false,
+  standalone: true,
 })
 class MiniPlayerStubComponent {}
 
@@ -20,8 +20,7 @@ describe('PublicLayout', () => {
   let component: PublicLayout;
   let fixture: ComponentFixture<PublicLayout>;
 
-  // простые моки потоков
-  const authState$ = new BehaviorSubject<Record<string, unknown>>({
+  const authState$ = new BehaviorSubject<AuthState>({
     token: null,
     email: null,
     role: null,
@@ -41,8 +40,7 @@ describe('PublicLayout', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [PublicLayout, MiniPlayerStubComponent],
-      imports: [CommonModule, RouterTestingModule],
+      imports: [PublicLayout, MiniPlayerStubComponent, CommonModule, RouterTestingModule],
       providers: [
         { provide: AuthService, useValue: authMock },
         { provide: UserIdentityService, useValue: identityMock },

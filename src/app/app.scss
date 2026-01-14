@@ -16,7 +16,6 @@
   background-size: cover;
   background-position: center;
 
-  /* меньше blur = меньше колец */
   filter: blur(90px) brightness(0.35) saturate(1.1);
   transform: scale(1.25);
 
@@ -24,7 +23,6 @@
   transition: opacity 800ms ease-in-out;
 }
 
-/* затемнение + лёгкое "зерно" чтобы убрать бэндинг */
 :host::after {
   content: '';
   position: fixed;
@@ -32,20 +30,18 @@
   z-index: -1;
   pointer-events: none;
 
-  /* слой затемнения */
   background: rgba(0, 0, 0, 0.35);
 
-  /* если хочешь сильнее затемнить — увеличь 0.35 */
-  /* background: rgba(0, 0, 0, 0.45); */
+  background: rgba(0, 0, 0, 0.45);
 
-  /* зерно (чисто CSS). Очень тонко, но помогает */
   background-image:
     radial-gradient(circle at 20% 10%, rgba(255, 255, 255, 0.06) 0 1px, transparent 2px),
     radial-gradient(circle at 80% 30%, rgba(255, 255, 255, 0.05) 0 1px, transparent 2px),
     radial-gradient(circle at 40% 70%, rgba(255, 255, 255, 0.04) 0 1px, transparent 2px),
     radial-gradient(circle at 70% 90%, rgba(255, 255, 255, 0.05) 0 1px, transparent 2px);
+
   background-size: 140px 140px;
-  opacity: 0.12; /* регулируй 0.06–0.18 */
+  opacity: 0.12;
 }
 
 .main-content {

@@ -1,16 +1,6 @@
-import {
-  AfterViewInit,
-  Component,
-  ElementRef,
-  EventEmitter,
-  Input,
-  OnChanges,
-  OnDestroy,
-  Output,
-  SimpleChanges,
-  ViewChild,
-} from '@angular/core';
+import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnChanges, OnDestroy, Output, SimpleChanges, ViewChild, inject } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { CommonModule } from '@angular/common';
 
 type SCWidgetInstance = {
   pause?: () => void;
@@ -31,30 +21,29 @@ declare const SC: {
 @Component({
   selector: 'app-soundcloud-player',
   templateUrl: './soundcloud-player.html',
-  standalone: false,
+  standalone: true,
+  imports: [CommonModule],
   styleUrls: ['./soundcloud-player.scss'],
 })
 export class SoundcloudPlayerComponent implements AfterViewInit, OnChanges, OnDestroy {
+  private sanitizer = inject(DomSanitizer);
+
   @ViewChild('iframe', { static: true }) iframeRef!: ElementRef<HTMLIFrameElement>;
 
   @Input() visible = true;
   @Input() volume = 70;
 
-  @Output() ready = new EventEmitter<void>();
-  @Output() finish = new EventEmitter<void>();
+  @Output() scReady = new EventEmitter<void>();
+  @Output() scFinish = new EventEmitter<void>();
 
-  safeSrc: SafeResourceUrl;
+  safeSrc: SafeResourceUrl = this.sanitizer.bypassSecurityTrustResourceUrl('about:blank');
 
   private widget: SCWidgetInstance | null = null;
   private widgetReady = false;
 
-  // держим pending, если load вызвали раньше READY
   private pendingLoad: { url: string; autoPlay: boolean; positionMs: number } | null = null;
 
-  constructor(private sanitizer: DomSanitizer) {
-    // start with a blank iframe to avoid SoundCloud widget errors on init
-    this.safeSrc = this.sanitizer.bypassSecurityTrustResourceUrl('about:blank');
-  }
+  // No constructor needed — using `inject()` for DI
 
   ngAfterViewInit(): void {
     // widget will be created lazily when a real track is loaded or when
@@ -66,7 +55,6 @@ export class SoundcloudPlayerComponent implements AfterViewInit, OnChanges, OnDe
   }
 
   ngOnDestroy(): void {
-    // у SC.Widget нет нормального destroy, просто отпускаем ссылку
     this.widget = null;
   }
 
@@ -121,7 +109,7 @@ export class SoundcloudPlayerComponent implements AfterViewInit, OnChanges, OnDe
     this.widget.bind(SC.Widget.Events.READY, () => {
       this.widgetReady = true;
       this.applyVolume();
-      this.ready.emit();
+      this.scReady.emit();
 
       if (this.pendingLoad) {
         const p = this.pendingLoad;
@@ -131,7 +119,7 @@ export class SoundcloudPlayerComponent implements AfterViewInit, OnChanges, OnDe
     });
 
     this.widget.bind(SC.Widget.Events.FINISH, () => {
-      this.finish.emit();
+      this.scFinish.emit();
     });
   }
 
