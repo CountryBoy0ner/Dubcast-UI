@@ -4,10 +4,11 @@ import { Observable } from 'rxjs';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
-  intercept(req: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
+  intercept(req: HttpRequest<unknown>, next: HttpHandler) {
     const token = localStorage.getItem('dubcast_token');
-    if (!token) return next.handle(req);
+    console.log('[AuthInterceptor]', req.url, 'token?', !!token);
 
+    if (!token) return next.handle(req);
     return next.handle(req.clone({ setHeaders: { Authorization: `Bearer ${token}` } }));
   }
 }

@@ -12,13 +12,12 @@
         <span class="count">{{ count }}</span>
       </div>
 
-      <a
-        routerLink="/radio"
-        class="nav__link"
-        routerLinkActive="active"
-        [routerLinkActiveOptions]="{ exact: true }"
-        >Radio</a
-      >
+      <a routerLink="/radio" class="nav__link" routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }">Radio</a>
+
+      <a routerLink="/queue" class="nav__link" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+        Queue
+      </a>
 
       <!-- Guest -->
       <ng-container *ngIf="!(isAuth$ | async); else authed">
@@ -30,11 +29,8 @@
       <ng-template #authed>
         <span class="nav__user" title="Logged in as {{ displayName$ | async }}">
           {{ displayName$ | async }}
-          <small
-            *ngIf="(isAuth$ | async) && !(hasUsername$ | async)"
-            class="no-username"
-            title="You don't have a username set. Set it in your Profile."
-          >
+          <small *ngIf="(isAuth$ | async) && !(hasUsername$ | async)" class="no-username"
+            title="You don't have a username set. Set it in your Profile.">
             (no username)
           </small>
         </span>

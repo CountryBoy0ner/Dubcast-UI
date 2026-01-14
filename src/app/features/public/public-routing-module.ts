@@ -6,6 +6,8 @@ import { RadioPage } from './pages/radio-page/radio-page';
 import { LoginPage } from './pages/login-page/login-page';
 import { RegisterPage } from './pages/register-page/register-page';
 import { ProfilePage } from './pages/profile-page/profile-page';
+import { QueuePage } from './pages/queue-page/queue-page'; 
+
 
 const routes: Routes = [
   {
@@ -14,6 +16,7 @@ const routes: Routes = [
     children: [
       { path: '', pathMatch: 'full', redirectTo: 'radio' },
       { path: 'radio', component: RadioPage },
+            { path: 'queue', component: QueuePage }, 
       { path: 'login', component: LoginPage },
       { path: 'register', component: RegisterPage },
       { path: 'profile', component: ProfilePage },

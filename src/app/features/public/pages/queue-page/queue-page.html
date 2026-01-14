@@ -1,0 +1,73 @@
+<div class="queue-page">
+  <div class="head">
+    <div class="head__text">
+      <div class="title">Queue</div>
+      <div class="sub">Previous 2 hours • Current • Next 2 hours</div>
+    </div>
+
+    <button
+      pButton
+      type="button"
+      class="p-button-text"
+      label="Refresh"
+      (click)="refresh()"
+    ></button>
+  </div>
+
+  <ng-container *ngIf="loading$ | async; else loaded">
+    <div class="sk">
+      <p-skeleton width="100%" height="18px"></p-skeleton>
+      <p-skeleton width="92%" height="18px"></p-skeleton>
+      <p-skeleton width="85%" height="18px"></p-skeleton>
+    </div>
+  </ng-container>
+
+  <ng-template #loaded>
+    <div class="error" *ngIf="error$ | async as err">{{ err }}</div>
+
+    <ng-container *ngIf="vm$ | async as vm">
+      <div class="range">
+        Range: {{ vm.fromIso | date:'dd.MM HH:mm' }} – {{ vm.toIso | date:'dd.MM HH:mm' }}
+      </div>
+
+      <!-- CURRENT -->
+      <div class="block" *ngIf="vm.current as cur">
+        <div class="block-title">Current</div>
+
+        <div class="item current">
+          <span class="time">{{ cur.startTime | date:'HH:mm' }}–{{ cur.endTime | date:'HH:mm' }}</span>
+          <span class="name">{{ cur.track.title }}</span>
+          <span class="likes">❤ {{ cur.track.likesCount ?? 0 }}</span>
+        </div>
+      </div>
+
+      <!-- NEXT -->
+      <div class="block">
+        <div class="block-title">Next 2 hours</div>
+
+        <div class="item"
+             *ngFor="let e of vm.next; trackBy: trackByEntryId">
+          <span class="time">{{ e.startTime | date:'HH:mm' }}</span>
+          <span class="name">{{ e.track.title }}</span>
+          <span class="likes">❤ {{ e.track.likesCount ?? 0 }}</span>
+        </div>
+
+        <div class="empty" *ngIf="vm.next.length === 0">No upcoming tracks</div>
+      </div>
+
+      <!-- PAST -->
+      <div class="block">
+        <div class="block-title">Previous 2 hours</div>
+
+        <div class="item"
+             *ngFor="let e of vm.past; trackBy: trackByEntryId">
+          <span class="time">{{ e.startTime | date:'HH:mm' }}</span>
+          <span class="name">{{ e.track.title }}</span>
+          <span class="likes">❤ {{ e.track.likesCount ?? 0 }}</span>
+        </div>
+
+        <div class="empty" *ngIf="vm.past.length === 0">No history</div>
+      </div>
+    </ng-container>
+  </ng-template>
+</div>

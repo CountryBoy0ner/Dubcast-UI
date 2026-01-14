@@ -29,9 +29,21 @@
               <div class="track">{{ now.title || 'Unknown Track' }}</div>
               <div class="meta">Playlist: {{ now.playlistTitle || 'None' }}</div>
               <div class="likes">
-                <i class="pi pi-heart"></i>
-                <span>{{ now.likesCount ?? 0 }}</span>
+                <button type="button" pButton class="like-btn" [class.liked]="(liked$ | async) === true"
+                  [disabled]="(likeLoading$ | async) || !(canLike$ | async)" (click)="toggleLike()"
+                  [title]="(canLike$ | async) ? 'Like' : 'Log in to like'">
+                  <i class="pi" [ngClass]="(liked$ | async) ? 'pi-heart-fill' : 'pi-heart'" aria-hidden="true"></i>
+
+                  <span class="likes-count">{{ (likesCount$ | async) ?? 0 }}</span>
+
+                  <i class="pi pi-spin pi-spinner like-spinner" [class.show]="likeLoading$ | async"></i>
+                </button>
+
+                <small *ngIf="!(canLike$ | async)" class="likes-hint">
+                  Login to like
+                </small>
               </div>
+
 
             </div>
           </div>

@@ -9,8 +9,19 @@ import { RegisterPage } from './pages/register-page/register-page';
 import { ProfilePage } from './pages/profile-page/profile-page';
 import { ChatModule } from './chat/chat.module';
 import { RadioWidgetModule } from './radio/radio-widget.module';
+import { QueuePage } from './pages/queue-page/queue-page';
 
 @NgModule({
-  imports: [SharedModule, PublicRoutingModule, ChatModule, RadioWidgetModule, PublicLayout, RadioPage, LoginPage, RegisterPage, ProfilePage],
+  imports: [SharedModule,
+    PublicRoutingModule,
+    ChatModule,
+    RadioWidgetModule,
+    PublicLayout,
+    RadioPage,
+    LoginPage,
+    RegisterPage,
+    ProfilePage,
+    QueuePage, 
+  ],
 })
-export class PublicModule {}
+export class PublicModule { }

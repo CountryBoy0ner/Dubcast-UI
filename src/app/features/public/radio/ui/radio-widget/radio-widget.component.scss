@@ -159,3 +159,84 @@
 .chat {
   margin-top: 40px;
 }
+
+
+.likes {
+  margin-top: 40px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+    justify-content: center;
+}
+.like-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  
+  box-sizing: border-box;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+
+  border-radius: 999px;
+  padding: 6px 12px;
+
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff;
+
+  transition:
+    background-color 140ms ease,
+    border-color 140ms ease,
+    transform 140ms ease,
+    filter 140ms ease,
+    box-shadow 140ms ease;
+
+  will-change: transform;
+}
+
+
+.like-btn {
+  height: 36px;           
+  line-height: 1;         
+  box-sizing: border-box; 
+  white-space: nowrap;    
+}
+
+
+.like-btn {
+  min-width: 110px; 
+  justify-content: center;
+}
+
+.likes-count {
+  font-weight: 700;
+  min-width: 2ch;
+  text-align: right;
+}
+
+.likes-hint {
+  opacity: 0.6;
+  font-size: 0.8rem;
+}
+
+
+.like-spinner {
+  width: 1rem;     // резервируем место
+  opacity: 0;
+  transform: scale(0.9);
+  transition: opacity 120ms ease, transform 120ms ease;
+}
+
+.like-spinner.show {
+  opacity: 0.8;
+  transform: scale(1);
+}
+
+
+:host ::ng-deep .like-btn.p-button:hover:not(:disabled),
+:host ::ng-deep .like-btn.p-button:focus:not(:disabled),
+:host ::ng-deep .like-btn.p-button:active:not(:disabled) {
+  background: rgba(255, 255, 255, 0.12) !important;
+  border-color: rgba(255, 255, 255, 0.35) !important;
+  color: #fff !important;
+  box-shadow: none !important;
+  filter: none !important;
+}

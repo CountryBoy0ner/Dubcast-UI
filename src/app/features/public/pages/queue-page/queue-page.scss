@@ -1,0 +1,94 @@
+.queue-page {
+  max-width: 980px;
+  margin: 0 auto;
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.title {
+  font-size: 1.6rem;
+  font-weight: 800;
+  opacity: 0.9;
+}
+
+.sub {
+  margin-top: 4px;
+  opacity: 0.65;
+  font-size: 0.9rem;
+}
+
+.sk {
+  margin-top: 14px;
+  display: grid;
+  gap: 10px;
+}
+
+.range {
+  margin-top: 12px;
+  opacity: 0.55;
+  font-size: 0.85rem;
+}
+
+.block {
+  margin-top: 18px;
+  padding: 14px;
+  border-radius: 14px;
+  background: rgba(33, 33, 33, 0.843);
+  border: 1px solid rgba(255, 255, 255, 0.157);
+}
+
+.block-title {
+  font-weight: 700;
+  opacity: 0.75;
+  margin-bottom: 10px;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 10px;
+  border-radius: 12px;
+}
+
+.item:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.item.current {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+}
+
+.time {
+  width: 88px;
+  flex: 0 0 auto;
+  opacity: 0.7;
+  font-variant-numeric: tabular-nums;
+}
+
+.name {
+  flex: 1;
+  opacity: 0.95;
+}
+
+.likes {
+  flex: 0 0 auto;
+  opacity: 0.75;
+  font-weight: 600;
+}
+
+.empty {
+  padding: 8px 10px;
+  opacity: 0.6;
+}
+
+.error {
+  margin-top: 12px;
+  color: #ff6b6b;
+}
