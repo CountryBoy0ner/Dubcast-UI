@@ -2,7 +2,7 @@ import { bootstrapApplication } from '@angular/platform-browser';
 import { importProvidersFrom } from '@angular/core';
 import { App } from './app/app';
 import { BrowserModule } from '@angular/platform-browser';
-import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AppRoutingModule } from './app/app-routing-module';
 import { CoreModule } from './app/core/core.module';
 import { SharedModule } from './app/shared/shared.module';
@@ -14,6 +14,7 @@ import { AuthInterceptor } from './app/core/auth/auth.interceptor';
 bootstrapApplication(App, {
   providers: [
     importProvidersFrom(
+      HttpClientModule,
       BrowserModule,
       AppRoutingModule,
       CoreModule,
