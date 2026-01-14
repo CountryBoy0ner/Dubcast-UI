@@ -7,8 +7,6 @@ import { ProfileMeResponse } from './user.model';
 export class UserApiService {
   private http = inject(HttpClient);
 
-  // No constructor needed — using `inject()` for DI
-
   me(): Observable<ProfileMeResponse> {
     return this.http.get<ProfileMeResponse>('/api/profile/me');
   }

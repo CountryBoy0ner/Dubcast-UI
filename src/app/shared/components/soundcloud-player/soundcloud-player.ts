@@ -43,8 +43,6 @@ export class SoundcloudPlayerComponent implements AfterViewInit, OnChanges, OnDe
 
   private pendingLoad: { url: string; autoPlay: boolean; positionMs: number } | null = null;
 
-  // No constructor needed — using `inject()` for DI
-
   ngAfterViewInit(): void {
     // widget will be created lazily when a real track is loaded or when
     // component becomes visible with a pending load
@@ -59,18 +57,15 @@ export class SoundcloudPlayerComponent implements AfterViewInit, OnChanges, OnDe
   }
 
   load(url: string, autoPlay = true, positionMs = 0): void {
-    // build player iframe URL
     const playerUrl =
       'https://w.soundcloud.com/player/?visual=true&url=' +
       encodeURIComponent(url) +
       '&auto_play=' +
       (autoPlay ? 'true' : 'false');
 
-    // if widget not yet created, set iframe src and create widget lazily
     if (!this.widget) {
       this.pendingLoad = { url, autoPlay, positionMs };
       this.safeSrc = this.sanitizer.bypassSecurityTrustResourceUrl(playerUrl);
-      // let Angular update iframe src, then create widget
       setTimeout(() => {
         if (!this.widget) this.createWidget();
       }, 0);
@@ -82,14 +77,13 @@ export class SoundcloudPlayerComponent implements AfterViewInit, OnChanges, OnDe
       return;
     }
 
-    // ensure any previous playback is stopped before loading new track
     const w = this.widget;
     if (!w) return;
 
     try {
       w.pause?.();
     } catch {
-      /* ignore parse errors from third-party widget */
+      // Ignore parse errors; considering reporting for monitoring
     }
 
     w.load(url, {

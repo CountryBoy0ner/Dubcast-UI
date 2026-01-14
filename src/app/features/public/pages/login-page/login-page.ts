@@ -24,7 +24,6 @@ export class LoginPage {
   });
 
   submit(): void {
-    // Clear previous error
     this.error = '';
 
     if (this.form.invalid) {
@@ -42,7 +41,6 @@ export class LoginPage {
       },
         error: (_e) => {
           this.loading = false;
-          // Prefer backend-provided message when available, fall back to Error.message
           this.error = _e?.error?.message || (!_e.error && _e.message) || 'Failed to login';
           this.cdr.detectChanges();
       },

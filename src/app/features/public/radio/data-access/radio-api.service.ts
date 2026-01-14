@@ -7,8 +7,6 @@ import { NowPlayingResponse } from '../models/now-playing.model';
 export class RadioApiService {
   private http = inject(HttpClient);
 
-  // No constructor needed — using `inject()` for DI
-
   getNowPlaying(): Observable<NowPlayingResponse | null> {
     return this.http
       .get<NowPlayingResponse>('/api/radio/now', { observe: 'response' })

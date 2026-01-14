@@ -3,6 +3,7 @@ import { BehaviorSubject } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class PlayerService {
+  // Exposes current volume; persisted in localStorage so user preference survives reloads
   private volumeSubject = new BehaviorSubject<number>(this.getSavedVolume());
   volume$ = this.volumeSubject.asObservable();
 
@@ -11,6 +12,10 @@ export class PlayerService {
 
   constructor() {}
 
+  /**
+   * Set playback volume and persist preference.
+   * Business intent: remember user volume between sessions and expose it reactively.
+   */
   setVolume(v: number): void {
     this.volumeSubject.next(v);
     localStorage.setItem('dubcast_volume', String(v));

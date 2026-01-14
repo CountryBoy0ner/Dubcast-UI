@@ -11,8 +11,6 @@ export interface PublicProfileResponse {
 export class PublicProfileApiService {
   private http = inject(HttpClient);
 
-  // No constructor needed — using `inject()` for DI
-
   getByUsername(username: string): Observable<PublicProfileResponse> {
     return this.http.get<PublicProfileResponse>(
       `/api/profile/public/${encodeURIComponent(username)}`,

@@ -17,23 +17,21 @@ export class ChatStoreService {
   loading$ = this.loadingSubject.asObservable();
 
   private PAGE_SIZE = 20;
-  private currentPage = 0; // 0 = latest page
+  private currentPage = 0;
   private noMore = false;
 
   private _liveConnected = false;
 
-  // No constructor needed — using `inject()` for DI
-
-  // Load a page from server. page=0 is the latest page.
   loadPage(page = 0): Observable<ChatMessageDto[]> {
     if (page !== 0 && this.noMore) {
-      // return empty observable
       return new Observable<ChatMessageDto[]>((sub) => {
         sub.next([]);
         sub.complete();
       });
     }
 
+    // Load a page of chat messages from the API. Business intent: support
+    // infinite scroll / pagination while caching the current pages in memory.
     this.loadingSubject.next(true);
     return this.api.getPage(page, this.PAGE_SIZE).pipe(
       tap((list) => {
@@ -82,8 +80,6 @@ export class ChatStoreService {
     this.api.send(trimmed).subscribe({
       next: (_saved) => {},
       error: (_e) => {
-        // Log to monitoring system if available; keep UI error handling here instead.
-        // console.error removed to avoid noisy logs in production.
       },
     });
   }

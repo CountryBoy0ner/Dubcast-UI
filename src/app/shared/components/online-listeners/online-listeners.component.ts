@@ -17,8 +17,6 @@ export class OnlineListenersComponent implements OnInit {
 
   stats$!: Observable<OnlineStatsDto | null>;
 
-  // No constructor needed — using `inject()` for DI
-
   ngOnInit(): void {
     this.stats$ = this.analytics.stats$;
     this.analytics.start();

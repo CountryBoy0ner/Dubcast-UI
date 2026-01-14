@@ -24,8 +24,6 @@ export class ChatMessageComponent implements OnDestroy {
   private hideSub?: Subscription;
   private loadSub?: Subscription;
 
-  // No constructor needed — using `inject()` for DI
-
   ngOnDestroy(): void {
     this.hideSub?.unsubscribe();
     this.loadSub?.unsubscribe();

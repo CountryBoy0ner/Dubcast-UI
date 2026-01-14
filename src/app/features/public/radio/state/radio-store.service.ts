@@ -17,8 +17,6 @@ export class RadioStoreService {
   error$ = this.errorSubject.asObservable();
   now$ = this.nowSubject.asObservable();
 
-  // No constructor needed — using `inject()` for DI
-
   loadNowPlaying(): void {
     this.loadingSubject.next(true);
     this.errorSubject.next(null);
@@ -27,9 +25,10 @@ export class RadioStoreService {
       .getNowPlaying()
       .pipe(finalize(() => this.loadingSubject.next(false)))
       .subscribe({
+        // On successful fetch update the current now-playing subject.
         next: (data) => this.nowSubject.next(data),
+        // On error set an error message that UI can display.
          error: (_e) => {
-           // Prefer a clear message to be displayed to UI when available
            this.errorSubject.next(_e?.message || 'Failed to load the current track');
         },
       });
@@ -38,10 +37,10 @@ export class RadioStoreService {
   connectLiveNowPlaying(): void {
     if (this._liveConnected) return;
     this._liveConnected = true;
+    // Open websocket to receive live updates and push them into `now$`.
     this.ws.connect();
     this.ws.nowPlaying$.subscribe((p) => this.nowSubject.next(p));
   }
 
-  // prevent multiple subscriptions when connectLiveNowPlaying called repeatedly
   private _liveConnected = false;
 }

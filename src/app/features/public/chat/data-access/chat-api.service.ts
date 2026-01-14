@@ -7,8 +7,6 @@ import { ChatMessageDto } from '../models/chat.model';
 export class ChatApiService {
   private http = inject(HttpClient);
 
-  // No constructor needed — using `inject()` for DI
-
   getLastMessages(limit = 50): Observable<ChatMessageDto[]> {
     return this.http.get<ChatMessageDto[]>(`/api/chat/messages?limit=${limit}`);
   }

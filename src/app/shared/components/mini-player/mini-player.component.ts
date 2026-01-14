@@ -24,8 +24,14 @@ export class MiniPlayerComponent {
     this.player.toggle();
   }
 
-  setVolume(v: unknown): void {
-    const n = Number(v as any) || 0;
+  /**
+   * UI bridge for the slider control. Accepts number|string because the
+   * slider/ngModel may provide either; convert to Number and forward to
+   * the PlayerService. Business intent: keep the UI control thin and
+   * delegate persistence and reactive distribution to `PlayerService`.
+   */
+  setVolume(v: number | string): void {
+    const n = Number(v) || 0;
     this.player.setVolume(n);
   }
 }

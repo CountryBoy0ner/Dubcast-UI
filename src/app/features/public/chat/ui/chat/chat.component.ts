@@ -32,8 +32,6 @@ export class ChatComponent implements OnInit, OnDestroy {
   noMorePages = false;
   pageSize = 20;
 
-  // No constructor needed — using `inject()` for DI
-
   ngOnInit(): void {
     this.isAuthenticated$ = this.auth.isAuthenticated$;
 
@@ -42,18 +40,14 @@ export class ChatComponent implements OnInit, OnDestroy {
 
     this.subs.add(this.auth.isAuthenticated$.subscribe((val) => (this.isAuthenticated = val)));
 
-    // subscribe to messages to handle autoscroll
     this.subs.add(
       this.store.messages$.subscribe(() => {
-        // wait a tick for DOM update
         setTimeout(() => this.handleMessagesUpdated(), 0);
       }),
     );
 
-    // initial load: page 0
     this.store.loadPage(0).subscribe({
       next: () => {
-        // after initial page loaded, scroll to bottom
         setTimeout(() => this.scrollToBottom(), 0);
       },
       error: () => {},
@@ -82,11 +76,10 @@ export class ChatComponent implements OnInit, OnDestroy {
 
   onContainerScroll(): void {
     const el = this.messagesContainer.nativeElement;
-    // if scrolled up more than 100px from bottom, consider user scrolled up
+
     const atBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 50;
     this.userScrolledUp = !atBottom;
 
-    // if scrolled to very top — load older
     if (el.scrollTop <= 10 && !this.loadingPage && !this.store.isNoMore()) {
       this.loadOlder();
     }
@@ -107,7 +100,7 @@ export class ChatComponent implements OnInit, OnDestroy {
     try {
       el.scrollTop = el.scrollHeight;
     } catch {
-      // ignore
+      // Ignore errors; considering reporting for monitoring
     }
   }
 
@@ -122,7 +115,7 @@ export class ChatComponent implements OnInit, OnDestroy {
       next: (_list) => {
         setTimeout(() => {
           const newScrollHeight = el.scrollHeight;
-          // keep viewport on same message
+
           el.scrollTop = newScrollHeight - prevScrollHeight + prevScrollTop;
           this.loadingPage = false;
         }, 0);

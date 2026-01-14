@@ -28,14 +28,15 @@ export class AnalyticsPresenceService implements OnDestroy {
 
   private readonly HEARTBEAT_INTERVAL_MS = 5000;
 
-  // No constructor needed — using `inject()` for DI
-
   init(): void {
     if (this.started) return;
     this.started = true;
 
     this.ws.start();
 
+    // page$ tracks the current visible route so presence messages include
+    // the page path; this allows analytics to understand which pages users
+    // view while listening.
     const page$ = this.router.events.pipe(
       filter((e): e is NavigationEnd => e instanceof NavigationEnd),
       map(() => this.router.url || '/'),
@@ -43,6 +44,8 @@ export class AnalyticsPresenceService implements OnDestroy {
       distinctUntilChanged(),
     );
 
+    // listening$ resolves whether the user is actively listening to a
+    // track (both UI indicates playing and the server reports a playing track).
     const listening$ = combineLatest([this.player.isPlaying$, this.radio.now$]).pipe(
       map(([uiPlaying, now]) => !!uiPlaying && !!now?.playing),
       distinctUntilChanged(),
@@ -53,6 +56,8 @@ export class AnalyticsPresenceService implements OnDestroy {
       distinctUntilChanged(),
     );
 
+    // Presence combines page, listening state and the current track id so
+    // heartbeats include enough context for analytics ingestion.
     const presence$ = combineLatest([page$, listening$, trackId$]);
 
     this.subscription.add(

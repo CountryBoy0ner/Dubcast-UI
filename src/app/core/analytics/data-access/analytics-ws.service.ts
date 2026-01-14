@@ -18,8 +18,6 @@ export class AnalyticsWsService {
 
   private pendingHeartbeat: AnalyticsHeartbeatMessage | null = null;
 
-  // No constructor needed — using `inject()` for DI
-
   start(): void {
     if (this.client?.active) return;
 
@@ -34,7 +32,7 @@ export class AnalyticsWsService {
             const payload = JSON.parse(m.body) as OnlineStatsDto;
             this.zone.run(() => this.statsSubject.next(payload));
           } catch {
-            // Ignore parse errors; consider reporting malformed messages to monitoring
+            // Ignore parse errors; considering reporting for monitoring
           }
         });
 

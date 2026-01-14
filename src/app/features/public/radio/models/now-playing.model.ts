@@ -2,7 +2,7 @@ export interface NowPlayingResponse {
   playing: boolean;
   title?: string;
   artworkUrl?: string;
-  startedAt?: string; // ISO date-time
+  startedAt?: string;
   durationSeconds?: number;
   trackUrl?: string;
   trackId?: number | null;

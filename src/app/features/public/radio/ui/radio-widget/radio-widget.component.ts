@@ -24,8 +24,6 @@ export class RadioWidgetComponent implements OnInit, OnDestroy {
   private playerService = inject(PlayerService);
   private backgroundService = inject(BackgroundService);
 
-  
-
   private nowPlayingData = new BehaviorSubject<NowPlayingResponse | null>(null);
   now$ = this.nowPlayingData.asObservable();
   private nowSubscription?: Subscription;
@@ -50,7 +48,6 @@ export class RadioWidgetComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.nowSubscription?.unsubscribe();
-    // Clear background when component is destroyed
   }
 
   toggleRadio(): void {

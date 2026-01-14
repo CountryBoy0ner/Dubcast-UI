@@ -36,7 +36,11 @@ export class AuthService {
   isAuthenticated$ = this.state$.pipe(map((s) => s.valid));
   currentUser$ = this.state$.pipe(map((s) => s.email));
 
-  // No constructor needed — using `inject()` for DI
+  /**
+   * On startup, try to restore an existing session from localStorage.
+   * Business intent: preserve user session across page reloads and
+   * validate the token with the backend before treating the user as authenticated.
+   */
   constructor() {
     const token = this.getToken();
     if (token) {
@@ -52,6 +56,7 @@ export class AuthService {
         password,
       })
       .pipe(
+        // Persist access token locally and then validate/hydrate user state.
         tap((res) => {
           if (!res?.accessToken) {
             throw new Error('Failed to get access token');
@@ -78,6 +83,8 @@ export class AuthService {
         password,
       })
       .pipe(
+        // After successful registration backend returns a token we persist
+        // and validate just like a normal login flow.
         tap((res) => {
           if (!res?.accessToken) {
             throw new Error('Failed to get access token');
@@ -98,6 +105,7 @@ export class AuthService {
   }
 
   logout(): void {
+    // Clear local session and notify identity service to drop cached user info.
     localStorage.removeItem(this.tokenKey);
 
     this.identity.clear();
@@ -126,6 +134,8 @@ export class AuthService {
     }
 
     return this.http.post<ValidateTokenResponse>('/api/auth/validate', { token }).pipe(
+      // If backend confirms token validity, hydrate email/role and refresh
+      // additional user identity data; otherwise clear session.
       tap((r) => {
         if (r.valid) {
           this.setState({ token, email: r.email ?? null, role: r.role ?? null, valid: true });
@@ -144,6 +154,7 @@ export class AuthService {
   }
 
   private setToken(token: string) {
+    // Persist raw token; the subsequent validateToken call will fill user info.
     localStorage.setItem(this.tokenKey, token);
     this.setState({ token, email: null, role: null, valid: false });
   }

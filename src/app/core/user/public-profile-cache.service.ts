@@ -9,8 +9,6 @@ export class PublicProfileCacheService {
 
   private cache = new Map<string, Observable<PublicProfileResponse>>();
 
-  // No constructor needed — using `inject()` for DI
-
   get(username: string): Observable<PublicProfileResponse> {
     const key = username.trim();
     if (!key) return throwError(() => new Error('Empty username'));

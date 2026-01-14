@@ -17,8 +17,6 @@ export class ProfileStoreService {
   saving$ = this.savingSubject.asObservable();
   error$ = this.errorSubject.asObservable();
 
-  // No constructor needed — using `inject()` for DI
-
   load(): Observable<UserProfileResponse | null> {
     this.loadingSubject.next(true);
     this.errorSubject.next(null);

@@ -34,7 +34,6 @@ export class ChatWsService {
 
   send(text: string): void {
     if (!this.client || !this.client.connected) {
-      // Not connected — caller should handle retry/queueing.
       return;
     }
     const payload = { text };

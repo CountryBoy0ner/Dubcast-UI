@@ -1,5 +1,3 @@
-// d:\Diplom\Dubcast\dubcast-ui\src\app\shared\components\global-player\global-player.component.ts
-
 import { Component, OnInit, ViewChild, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Subscription } from 'rxjs';
@@ -18,6 +16,11 @@ import { BackgroundService } from '../../../core/background/background.service';
   standalone: true,
   imports: [CommonModule, SoundcloudPlayerComponent],
 })
+/**
+ * Global player sits in the app shell and coordinates playback for the whole app.
+ * Business intent: Keep a single authoritative player instance that can sync
+ * with server-reported now-playing state and control the embedded SoundCloud player.
+ */
 export class GlobalPlayerComponent implements OnInit, AfterViewInit, OnDestroy {
   private store = inject(RadioStoreService);
   private playerService = inject(PlayerService);
@@ -33,12 +36,12 @@ export class GlobalPlayerComponent implements OnInit, AfterViewInit, OnDestroy {
   private lastKey: string | null = null;
   private playLock = false;
 
-  // No constructor needed — using `inject()` for DI
-
   ngOnInit(): void {
+    // Connect to live now-playing updates and fetch the initial state.
     this.store.connectLiveNowPlaying();
     this.store.loadNowPlaying();
 
+    // Subscribe to player volume and playing state to reflect UI controls.
     this.sub.add(
       this.playerService.volume$.subscribe((v) => {
         this.volume = v;
@@ -83,11 +86,13 @@ export class GlobalPlayerComponent implements OnInit, AfterViewInit, OnDestroy {
 
     const key = `${now.trackUrl}|${now.startedAt ?? ''}`;
 
+    // If the track didn't change just ensure the embedded player is playing.
     if (this.lastKey === key) {
       if (this.player) this.player.play();
       return;
     }
 
+    // Otherwise start playback from the reported position.
     this.lastKey = key;
     this.playFromNow(now);
   }
@@ -98,6 +103,8 @@ export class GlobalPlayerComponent implements OnInit, AfterViewInit, OnDestroy {
     this.playLock = true;
     setTimeout(() => (this.playLock = false), 1000);
 
+    // Convert server's startedAt/duration to a millisecond offset and instruct
+    // the embedded player to seek/play from that position.
     const posMs = this.computePositionMs(now);
     this.player.load(now.trackUrl!, true, posMs);
   }

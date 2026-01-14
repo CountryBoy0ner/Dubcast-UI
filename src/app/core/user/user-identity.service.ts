@@ -19,8 +19,6 @@ export class UserIdentityService {
   username$ = this.state$.pipe(map((s) => (s.username ?? '').trim() || null));
   hasUsername$ = this.username$.pipe(map((u) => !!u));
 
-  // No constructor needed — using `inject()` for DI
-  
   refresh(): Observable<string | null> {
     return this.api.me().pipe(
       map((p) => (p.username ?? '').trim() || null),
