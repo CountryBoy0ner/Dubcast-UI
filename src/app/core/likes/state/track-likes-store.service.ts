@@ -32,7 +32,6 @@ export class TrackLikesStoreService {
   liked$ = this.state$.pipe(map((s) => s.liked));
   loading$ = this.state$.pipe(map((s) => s.loading));
 
-  // ✅ canLike = залогинен И есть trackId
   canLike$ = combineLatest([this.auth.isAuthenticated$, this.trackId$]).pipe(
     map(([isAuth, trackId]) => isAuth && !!trackId),
   );
@@ -66,11 +65,9 @@ export class TrackLikesStoreService {
     );
   }
 
-  // ✅ initialLikesCount берём из nowPlaying, чтобы сразу показать правильное число
   setCurrentTrack(trackId: number | null, initialLikesCount: number = 0): void {
     const cur = this.stateSubject.value;
     if (cur.trackId === trackId) {
-      // если трек тот же — можно только обновить число лайков (на всякий)
       this.patch({ likesCount: initialLikesCount ?? 0 });
       return;
     }

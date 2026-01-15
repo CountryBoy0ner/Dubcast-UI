@@ -3,11 +3,11 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { CommonModule } from '@angular/common';
 import { RouterTestingModule } from '@angular/router/testing';
 import { BehaviorSubject } from 'rxjs';
-import { AuthState } from '../../../../core/auth/auth.service';
 
-import { PublicLayout } from './public-layout';
-import { AuthService } from '../../../../core/auth/auth.service';
+import { AuthService, AuthState } from '../../../../core/auth/auth.service';
 import { UserIdentityService } from '../../../../core/user/user-identity.service';
+import { AnalyticsWsService } from '../../../../core/analytics/data-access/analytics-ws.service';
+import { PublicLayout } from './public-layout';
 
 @Component({
   selector: 'app-mini-player',
@@ -38,12 +38,17 @@ describe('PublicLayout', () => {
     hasUsername$: new BehaviorSubject<boolean>(false).asObservable(),
   };
 
+  const analyticsMock: Partial<AnalyticsWsService> = {
+    stats$: new BehaviorSubject<any>({ totalOnline: 0 }).asObservable(),
+  };
+
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [PublicLayout, MiniPlayerStubComponent, CommonModule, RouterTestingModule],
       providers: [
         { provide: AuthService, useValue: authMock },
         { provide: UserIdentityService, useValue: identityMock },
+        { provide: AnalyticsWsService, useValue: analyticsMock },
       ],
     }).compileComponents();
 

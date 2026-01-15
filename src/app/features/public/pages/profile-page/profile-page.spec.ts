@@ -1,8 +1,9 @@
-import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { of } from 'rxjs';
+import { vi } from 'vitest';
 
 import { ProfilePage } from './profile-page';
 import { ProfileStoreService } from '../../profile/state/profile-store.service';
@@ -13,16 +14,10 @@ describe('ProfilePage', () => {
   let fixture: ComponentFixture<ProfilePage>;
   let store: ProfileStoreService;
 
-  const mockProfile: UserProfileResponse = {
+  const mockProfile = {
     username: 'testuser',
     bio: 'test bio',
-    id: '',
-    slug: '',
-    micSource: false,
-    pseudoSource: false,
-    isOnline: false,
-    lastSeen: ''
-  };
+  } as unknown as UserProfileResponse;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -36,8 +31,8 @@ describe('ProfilePage', () => {
             saving$: of(false),
             error$: of(null),
             load: () => of(mockProfile),
-            saveUsername: (username: string) => of({ ...mockProfile, username }),
-            saveBio: (bio: string) => of({ ...mockProfile, bio }),
+            saveUsername: (username: string) => of({ ...(mockProfile as any), username } as UserProfileResponse),
+            saveBio: (bio: string) => of({ ...(mockProfile as any), bio } as UserProfileResponse),
           },
         },
       ],
@@ -53,14 +48,16 @@ describe('ProfilePage', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should load profile on init', fakeAsync(() => {
-    spyOn(store, 'load').and.callThrough();
+  it('should load profile on init', () => {
+    const loadSpy = vi.spyOn(store, 'load');
+
     component.ngOnInit();
-    tick();
-    expect(store.load).toHaveBeenCalled();
+    fixture.detectChanges();
+
+    expect(loadSpy).toHaveBeenCalled();
     expect(component.form.get('username')?.value).toBe('testuser');
     expect(component.form.get('bio')?.value).toBe('test bio');
-  }));
+  });
 
   it('should have an invalid username if it is too short', () => {
     component.form.get('username')?.setValue('a');
@@ -78,30 +75,38 @@ describe('ProfilePage', () => {
   });
 
   it('should not save username if it is invalid', () => {
-    spyOn(store, 'saveUsername').and.callThrough();
+    vi.spyOn(store, 'saveUsername');
+
     component.form.get('username')?.setValue('a');
     component.saveUsername();
+
     expect(store.saveUsername).not.toHaveBeenCalled();
   });
-  
+
   it('should save username if it is valid and changed', () => {
-    spyOn(store, 'saveUsername').and.callThrough();
+    vi.spyOn(store, 'saveUsername');
+
     component.form.get('username')?.setValue('newuser');
     component.saveUsername();
+
     expect(store.saveUsername).toHaveBeenCalledWith('newuser');
   });
 
   it('should not save username if it is not changed', () => {
-    spyOn(store, 'saveUsername').and.callThrough();
+    vi.spyOn(store, 'saveUsername');
+
     component.form.get('username')?.setValue('testuser');
     component.saveUsername();
+
     expect(store.saveUsername).not.toHaveBeenCalled();
   });
 
   it('should save bio if it is valid', () => {
-    spyOn(store, 'saveBio').and.callThrough();
+    vi.spyOn(store, 'saveBio');
+
     component.form.get('bio')?.setValue('new bio');
     component.saveBio();
+
     expect(store.saveBio).toHaveBeenCalledWith('new bio');
   });
 });

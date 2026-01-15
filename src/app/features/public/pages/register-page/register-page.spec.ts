@@ -3,10 +3,11 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { of, throwError } from 'rxjs';
+import { Router } from '@angular/router';
+import { vi } from 'vitest';
 
 import { RegisterPage } from './register-page';
 import { AuthService } from '../../../../core/auth/auth.service';
-import { Router } from '@angular/router';
 
 describe('RegisterPage', () => {
   let component: RegisterPage;
@@ -17,7 +18,7 @@ describe('RegisterPage', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [RegisterPage, ReactiveFormsModule, RouterTestingModule.withRoutes([]), HttpClientTestingModule],
-      providers: [AuthService]
+      providers: [AuthService],
     }).compileComponents();
 
     fixture = TestBed.createComponent(RegisterPage);
@@ -56,36 +57,49 @@ describe('RegisterPage', () => {
   });
 
   it('should call auth.register on submit with valid form', () => {
-    spyOn(authService, 'register').and.returnValue(of({}));
+    vi.spyOn(authService, 'register').mockReturnValue(of({} as any));
+
     component.form.get('email')?.setValue('test@test.com');
     component.form.get('password')?.setValue('password');
     component.form.get('confirmPassword')?.setValue('password');
+
     component.submit();
+
     expect(authService.register).toHaveBeenCalledWith('test@test.com', 'password');
   });
 
   it('should navigate to /radio on successful registration', () => {
-    spyOn(authService, 'register').and.returnValue(of({}));
-    spyOn(router, 'navigate');
+    vi.spyOn(authService, 'register').mockReturnValue(of({} as any));
+    vi.spyOn(router, 'navigate').mockResolvedValue(true as any);
+
     component.form.get('email')?.setValue('test@test.com');
     component.form.get('password')?.setValue('password');
     component.form.get('confirmPassword')?.setValue('password');
+
     component.submit();
+
     expect(router.navigate).toHaveBeenCalledWith(['/radio']);
   });
 
   it('should set error message on failed registration', () => {
-    spyOn(authService, 'register').and.returnValue(throwError(() => ({ error: { message: 'Email already exists' } })));
+    vi.spyOn(authService, 'register').mockReturnValue(
+      throwError(() => ({ error: { message: 'Email already exists' } })),
+    );
+
     component.form.get('email')?.setValue('test@test.com');
     component.form.get('password')?.setValue('password');
     component.form.get('confirmPassword')?.setValue('password');
+
     component.submit();
+
     expect(component.error).toBe('Email already exists');
   });
 
   it('should not call auth.register on submit with invalid form', () => {
-    spyOn(authService, 'register');
+    vi.spyOn(authService, 'register').mockReturnValue(of({} as any));
+
     component.submit();
+
     expect(authService.register).not.toHaveBeenCalled();
   });
 });

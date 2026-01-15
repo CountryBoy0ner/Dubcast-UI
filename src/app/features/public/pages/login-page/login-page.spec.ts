@@ -3,9 +3,11 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { of, throwError } from 'rxjs';
+import { Router } from '@angular/router';
+import { vi } from 'vitest';
+
 import { LoginPage } from './login-page';
 import { AuthService } from '../../../../core/auth/auth.service';
-import { Router } from '@angular/router';
 
 describe('LoginPage', () => {
   let component: LoginPage;
@@ -16,7 +18,7 @@ describe('LoginPage', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [LoginPage, ReactiveFormsModule, RouterTestingModule.withRoutes([]), HttpClientTestingModule],
-      providers: [AuthService]
+      providers: [AuthService],
     }).compileComponents();
 
     fixture = TestBed.createComponent(LoginPage);
@@ -45,7 +47,7 @@ describe('LoginPage', () => {
     password?.setValue('');
     expect(password?.valid).toBeFalsy();
   });
-  
+
   it('should be invalid if password is less than 3 characters', () => {
     const password = component.form.get('password');
     password?.setValue('12');
@@ -59,33 +61,46 @@ describe('LoginPage', () => {
   });
 
   it('should call auth.login on submit with valid form', () => {
-    spyOn(authService, 'login').and.returnValue(of({}));
+    vi.spyOn(authService, 'login').mockReturnValue(of({} as any));
+
     component.form.get('emailOrUsername')?.setValue('test@test.com');
     component.form.get('password')?.setValue('password');
+
     component.submit();
+
     expect(authService.login).toHaveBeenCalledWith('test@test.com', 'password');
   });
 
   it('should navigate to /radio on successful login', () => {
-    spyOn(authService, 'login').and.returnValue(of({}));
-    spyOn(router, 'navigate');
+    vi.spyOn(authService, 'login').mockReturnValue(of({} as any));
+    vi.spyOn(router, 'navigate').mockResolvedValue(true as any);
+
     component.form.get('emailOrUsername')?.setValue('test@test.com');
     component.form.get('password')?.setValue('password');
+
     component.submit();
+
     expect(router.navigate).toHaveBeenCalledWith(['/radio']);
   });
 
   it('should set error message on failed login', () => {
-    spyOn(authService, 'login').and.returnValue(throwError(() => ({ error: { message: 'Invalid credentials' } })));
+    vi.spyOn(authService, 'login').mockReturnValue(
+      throwError(() => ({ error: { message: 'Invalid credentials' } })),
+    );
+
     component.form.get('emailOrUsername')?.setValue('test@test.com');
     component.form.get('password')?.setValue('password');
+
     component.submit();
+
     expect(component.error).toBe('Invalid credentials');
   });
 
   it('should not call auth.login on submit with invalid form', () => {
-    spyOn(authService, 'login');
+    vi.spyOn(authService, 'login').mockReturnValue(of({} as any));
+
     component.submit();
+
     expect(authService.login).not.toHaveBeenCalled();
   });
 });
